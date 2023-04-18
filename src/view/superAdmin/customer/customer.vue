@@ -3,47 +3,28 @@
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="addUser">新增客户</el-button>
+        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
       </div>
       <el-table
         :data="tableData"
         row-key="id"
       >
-<!--        <el-table-column align="left" label="头像" min-width="75">-->
-<!--          <template #default="scope">-->
-<!--            <CustomPic style="margin-top:8px" :pic-src="scope.row.headerImg" />-->
-<!--          </template>-->
-<!--        </el-table-column>-->
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
         <el-table-column align="left" label="用户名" min-width="150" prop="name" />
-<!--        <el-table-column align="left" label="昵称" min-width="150" prop="nickName" />-->
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
-<!--        <el-table-column align="left" label="用户角色" min-width="200">-->
-<!--          <template #default="scope">-->
-<!--            <el-cascader-->
-<!--              v-model="scope.row.authorityIds"-->
-<!--              :options="authOptions"-->
-<!--              :show-all-levels="false"-->
-<!--              collapse-tags-->
-<!--              :props="{ multiple:true,checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"-->
-<!--              :clearable="false"-->
-<!--              @visible-change="(flag)=>{changeAuthority(scope.row,flag,0)}"-->
-<!--              @remove-tag="(removeAuth)=>{changeAuthority(scope.row,false,removeAuth)}"-->
-<!--            />-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column align="left" label="启用" min-width="150">-->
-<!--          <template #default="scope">-->
-<!--            <el-switch-->
-<!--              v-model="scope.row.enable"-->
-<!--              inline-prompt-->
-<!--              :active-value="1"-->
-<!--              :inactive-value="2"-->
-<!--              @change="()=>{switchEnable(scope.row)}"-->
-<!--            />-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+        <el-table-column align="left" label="启用" min-width="150">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.enable"
+              inline-prompt
+              :active-value="1"
+              :inactive-value="2"
+              @change="()=>{switchEnable(scope.row)}"
+            />
+          </template>
+        </el-table-column>
 
         <el-table-column label="操作" min-width="250" fixed="right">
           <template #default="scope">
@@ -76,7 +57,7 @@
       </div>
     </div>
     <el-dialog
-      v-model="addUserDialog"
+      v-model="addCustomerDialog"
       custom-class="user-dialog"
       title="用户"
       :show-close="false"
@@ -131,8 +112,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="closeAddUserDialog">取 消</el-button>
-          <el-button type="primary" @click="enterAddUserDialog">确 定</el-button>
+          <el-button @click="closeaddCustomerDialog">取 消</el-button>
+          <el-button type="primary" @click="enteraddCustomerDialog">确 定</el-button>
         </div>
       </template>
     </el-dialog>
@@ -150,16 +131,17 @@ export default {
 
 import {
   getCustomerList,
-   setUserAuthorities,
-  register,
+  // setUserAuthorities,
+  addCustomer,
+  // register,
   deleteUser
 } from '@/api/user'
 
-import { getAuthorityList } from '@/api/authority'
+// import { getAuthorityList } from '@/api/authority'
 // import CustomPic from '@/components/customPic/index.vue'
 import ChooseImg from '@/components/chooseImg/index.vue'
 import WarningBar from '@/components/warningBar/warningBar.vue'
-import { setUserInfo, resetPassword } from '@/api/user.js'
+// import { setUserInfo, resetPassword } from '@/api/user.js'
 
 import { nextTick, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -214,16 +196,11 @@ const handleCurrentChange = (val) => {
 const getTableData = async() => {
   const table = await getCustomerList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
-    console.log("qqqqqqqqqqqqqqqqqq")
-    console.log(table.data)
-    tableData.value = table.data
+    tableData.value = table.data.list
     total.value = table.data.total
     page.value = table.data.page
     pageSize.value = table.data.pageSize
-    console.log("qqqqqqqqqqqqqqqqqq")
-    console.log(tableData.value)
   }
-
 }
 
 // watch(() => tableData.value, () => {
@@ -295,10 +272,8 @@ const deleteUserFunc = async(row) => {
 // 弹窗相关
 const userInfo = ref({
   name: '',
-  password: '',
-  headerImg: '',
-  authorityId: '',
-  authorityIds: [],
+  phone: 0,
+  email: '',
   enable: 1,
 })
 
@@ -325,46 +300,46 @@ const rules = ref({
   // ]
 })
 const userForm = ref(null)
-const enterAddUserDialog = async() => {
-  userInfo.value.authorityId = userInfo.value.authorityIds[0]
+const enteraddCustomerDialog = async() => {
+  // userInfo.value.authorityId = userInfo.value.authorityIds[0]
   userForm.value.validate(async valid => {
     if (valid) {
       const req = {
         ...userInfo.value
       }
       if (dialogFlag.value === 'add') {
-        const res = await register(req)
+        const res = await addCustomer(req)
         if (res.code === 0) {
           ElMessage({ type: 'success', message: '创建成功' })
           await getTableData()
-          closeAddUserDialog()
+          closeaddCustomerDialog()
         }
       }
-      if (dialogFlag.value === 'edit') {
-        const res = await setUserInfo(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeAddUserDialog()
-        }
-      }
+      // if (dialogFlag.value === 'edit') {
+      //   const res = await setUserInfo(req)
+      //   if (res.code === 0) {
+      //     ElMessage({ type: 'success', message: '编辑成功' })
+      //     await getTableData()
+      //     closeaddCustomerDialog()
+      //   }
+      // }
     }
   })
 }
 
-const addUserDialog = ref(false)
-const closeAddUserDialog = () => {
+const addCustomerDialog = ref(false)
+const closeaddCustomerDialog = () => {
   userForm.value.resetFields()
   userInfo.value.headerImg = ''
   userInfo.value.authorityIds = []
-  addUserDialog.value = false
+  addCustomerDialog.value = false
 }
 
 const dialogFlag = ref('add')
 
-const addUser = () => {
+const temCustomer = () => {
   dialogFlag.value = 'add'
-  addUserDialog.value = true
+  addCustomerDialog.value = true
 }
 
 // const tempAuth = {}
@@ -395,7 +370,7 @@ const addUser = () => {
 const openEdit = (row) => {
   dialogFlag.value = 'edit'
   userInfo.value = JSON.parse(JSON.stringify(row))
-  addUserDialog.value = true
+  addCustomerDialog.value = true
 }
 
 const switchEnable = async(row) => {
