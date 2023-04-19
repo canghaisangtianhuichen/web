@@ -111,7 +111,7 @@
 
 <script>
 export default {
-  name: 'User',
+  name: 'Customer',
 }
 </script>
 

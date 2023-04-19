@@ -62,15 +62,6 @@ export const getUserList = (data) => {
     data: data
   })
 }
-// 获取客户列表
-export const getCustomerList = (data) => {
-  return service({
-    url: '/warehouse/v1/getCustomersList',
-    method: 'get',
-    data: data
-  })
-}
-
 // @Tags User
 // @Summary 设置用户权限
 // @Security ApiKeyAuth
