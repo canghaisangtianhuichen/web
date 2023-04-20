@@ -3,14 +3,14 @@
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
+        <el-button type="primary" icon="plus" @click="temCustomer">新增供应商</el-button>
       </div>
       <el-table
         :data="tableData"
         row-key="id"
       >
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
+        <el-table-column align="left" label="姓名" min-width="150" prop="name" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
@@ -20,7 +20,7 @@
               <p>确定要删除此用户吗</p>
               <div style="text-align: right; margin-top: 8px;">
                 <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
+                <el-button type="primary" @click="deleteSupplierFunc(scope.row)">确定</el-button>
               </div>
               <template #reference>
                 <el-button type="primary" link icon="delete">删除</el-button>
@@ -118,10 +118,10 @@ export default {
 <script setup>
 
 import {
-  getCustomersList,
-  addCustomer,
-  deleteCustomer,
-  updateCustomer
+  getSuppliersList,
+  addSupplier,
+  deleteSupplier,
+  updateSupplier,
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -181,7 +181,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: 1, pageSize: 10 })
+  const table = await getSuppliersList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -247,13 +247,13 @@ const setOptions = (authData) => {
   setAuthorityOptions(authData, authOptions.value)
 }
 
-const deleteCustomerFunc = async(row) => {
+const deleteSupplierFunc = async(row) => {
   const req = ref({
     ...Tem.value
   })
   req.value.id = row.id
   console.log(req.value)
-  const res = await deleteCustomer(req)
+  const res = await deleteSupplier(req)
   if (res.code === 0) {
     ElMessage.success('删除成功')
     row.visible = false
@@ -302,7 +302,7 @@ const enteraddCustomerDialog = async() => {
         ...userInfo.value
       }
       if (dialogFlag.value === 'add') {
-        const res = await addCustomer(req)
+        const res = await addSupplier(req)
         if (res.code === 0) {
           ElMessage({ type: 'success', message: '创建成功' })
           await getTableData()
@@ -310,7 +310,7 @@ const enteraddCustomerDialog = async() => {
         }
       }
       if (dialogFlag.value === 'edit') {
-        const res = await updateCustomer(req)
+        const res = await updateSupplier(req)
         if (res.code === 0) {
           ElMessage({ type: 'success', message: '编辑成功' })
           await getTableData()

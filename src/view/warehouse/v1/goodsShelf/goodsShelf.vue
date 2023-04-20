@@ -3,33 +3,35 @@
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
+<!--        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>-->
       </div>
       <el-table
         :data="tableData"
         row-key="id"
       >
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
-        <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
-        <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
-        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
-          <template #default="scope">
-            <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此用户吗</p>
-              <div style="text-align: right; margin-top: 8px;">
-                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
-              </div>
-              <template #reference>
-                <el-button type="primary" link icon="delete">删除</el-button>
-              </template>
-            </el-popover>
-            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-            <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
-          </template>
-        </el-table-column>
+        <el-table-column align="left" label="货架" min-width="150" prop="name" />
+        <el-table-column align="left" label="仓库" min-width="180" prop="warehouseName" />
+        <el-table-column align="left" label="货物" min-width="180" prop="goodsName" />
+        <el-table-column align="left" label="货物重量" min-width="150" prop="realTimeWeight" />
+        <el-table-column align="left" label="载重" min-width="150" prop="maxWeight" />
+        <el-table-column align="left" label="更新时间" min-width="150" prop="updatedAt" />
+<!--        <el-table-column label="操作" min-width="250" fixed="right">-->
+<!--          <template #default="scope">-->
+<!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
+<!--              <p>确定要删除此用户吗</p>-->
+<!--              <div style="text-align: right; margin-top: 8px;">-->
+<!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
+<!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
+<!--              </div>-->
+<!--              <template #reference>-->
+<!--                <el-button type="primary" link icon="delete">删除</el-button>-->
+<!--              </template>-->
+<!--            </el-popover>-->
+<!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
+<!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+<!--          </template>-->
+<!--        </el-table-column>-->
 
       </el-table>
       <div class="gva-pagination">
@@ -118,7 +120,7 @@ export default {
 <script setup>
 
 import {
-  getCustomersList,
+  getGoodsShelfsList,
   addCustomer,
   deleteCustomer,
   updateCustomer
@@ -181,7 +183,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: 1, pageSize: 10 })
+  const table = await getGoodsShelfsList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total

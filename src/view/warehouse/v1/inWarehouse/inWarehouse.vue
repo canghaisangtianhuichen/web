@@ -10,7 +10,7 @@
         row-key="id"
       >
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
+        <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
