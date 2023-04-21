@@ -13,6 +13,7 @@
         <el-table-column align="left" label="货物" min-width="150" prop="name" />
         <el-table-column align="left" label="仓库" min-width="180" prop="warehouseName" />
         <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+        <el-table-column align="left" label="创建时间" min-width="150" prop="createdAt" />
         <el-table-column align="left" label="更新时间" min-width="150" prop="updatedAt" />
 <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
 <!--          <template #default="scope">-->
@@ -248,21 +249,13 @@ const setOptions = (authData) => {
 }
 
 const deleteCustomerFunc = async(row) => {
-  const req = ref({
-    ...Tem.value
-  })
-  req.value.id = row.id
-  console.log(req.value)
-  const res = await deleteCustomer(req)
+  const res = await deleteCustomer({ id: row.id })
   if (res.code === 0) {
     ElMessage.success('删除成功')
     row.visible = false
     await getTableData()
   }
 }
-const Tem = ref({
-  id: 0,
-})
 // 弹窗相关
 const userInfo = ref({
   name: '',

@@ -248,21 +248,13 @@ const setOptions = (authData) => {
 }
 
 const deleteCustomerFunc = async(row) => {
-  const req = ref({
-    ...Tem.value
-  })
-  req.value.id = row.id
-  console.log(req.value)
-  const res = await deleteCustomer(req)
+  const res = await deleteCustomer({ id: row.id })
   if (res.code === 0) {
     ElMessage.success('删除成功')
     row.visible = false
     await getTableData()
   }
 }
-const Tem = ref({
-  id: 0,
-})
 // 弹窗相关
 const userInfo = ref({
   name: '',

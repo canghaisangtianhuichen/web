@@ -47,19 +47,13 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="用户"
+      title="供应商"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
     >
       <div style="height:60vh;overflow:auto;padding:0 12px;">
         <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">
-          <!--          <el-form-item v-if="dialogFlag === 'add'" label="用户名" prop="name">-->
-          <!--            <el-input v-model="userInfo.userName" />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item v-if="dialogFlag === 'add'" label="密码" prop="password">-->
-          <!--            <el-input v-model="userInfo.password" />-->
-          <!--          </el-form-item>-->
           <el-form-item label="姓名" prop="name">
             <el-input v-model="userInfo.name" />
           </el-form-item>
@@ -69,31 +63,6 @@
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="userInfo.email" />
           </el-form-item>
-          <!--          <el-form-item label="用户角色" prop="authorityId">-->
-          <!--            <el-cascader-->
-          <!--              v-model="userInfo.authorityIds"-->
-          <!--              style="width:100%"-->
-          <!--              :options="authOptions"-->
-          <!--              :show-all-levels="false"-->
-          <!--              :props="{ multiple:true,checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"-->
-          <!--              :clearable="false"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="启用" prop="disabled">-->
-          <!--            <el-switch-->
-          <!--              v-model="userInfo.enable"-->
-          <!--              inline-prompt-->
-          <!--              :active-value="1"-->
-          <!--              :inactive-value="2"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="头像" label-width="80px">-->
-          <!--            <div style="display:inline-block" @click="openHeaderChange">-->
-          <!--              <img v-if="userInfo.headerImg" alt="头像" class="header-img-box" :src="(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg">-->
-          <!--              <div v-else class="header-img-box">从媒体库选择</div>-->
-          <!--            </div>-->
-          <!--          </el-form-item>-->
-
         </el-form>
 
       </div>
@@ -171,15 +140,6 @@ const handleCurrentChange = (val) => {
 }
 
 // 查询
-// const getTableData = async() => {
-//   const table = await getCustomerList({ page: page.value, pageSize: pageSize.value })
-//   if (table.code === 0) {
-//     tableData.value = table.data.list
-//     total.value = table.data.total
-//     page.value = table.data.page
-//     pageSize.value = table.data.pageSize
-//   }
-// }
 const getTableData = async() => {
   const table = await getSuppliersList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
@@ -202,39 +162,6 @@ const initPage = async() => {
 
 initPage()
 
-// const resetPasswordFunc = (row) => {
-//   ElMessageBox.confirm(
-//     '是否将此用户密码重置为123456?',
-//     '警告',
-//     {
-//       confirmButtonText: '确定',
-//       cancelButtonText: '取消',
-//       type: 'warning',
-//     }
-//   ).then(async() => {
-//     const res = await resetPassword({
-//       ID: row.ID,
-//     })
-//     if (res.code === 0) {
-//       ElMessage({
-//         type: 'success',
-//         message: res.msg,
-//       })
-//     } else {
-//       ElMessage({
-//         type: 'error',
-//         message: res.msg,
-//       })
-//     }
-//   })
-// }
-// const setAuthorityIds = () => {
-//   tableData.value && tableData.value.forEach((user) => {
-//     customer.authorityIds = customer.authorities && customer.authorities.map(i => {
-//       return i.authorityId
-//     })
-//   })
-// }
 
 const chooseImg = ref(null)
 // const openHeaderChange = () => {
@@ -248,21 +175,13 @@ const setOptions = (authData) => {
 }
 
 const deleteSupplierFunc = async(row) => {
-  const req = ref({
-    ...Tem.value
-  })
-  req.value.id = row.id
-  console.log(req.value)
-  const res = await deleteSupplier(req)
+  const res = await deleteSupplier({ id: row.id })
   if (res.code === 0) {
     ElMessage.success('删除成功')
     row.visible = false
     await getTableData()
   }
 }
-const Tem = ref({
-  id: 0,
-})
 // 弹窗相关
 const userInfo = ref({
   name: '',
@@ -274,24 +193,8 @@ const userInfo = ref({
 const rules = ref({
   Name: [
     { required: true, message: '请输入姓名', trigger: 'blur' },
-    { min: 2, message: '最低5位字符', trigger: 'blur' }
-  ],
-  // password: [
-  //   { required: true, message: '请输入用户密码', trigger: 'blur' },
-  //   { min: 6, message: '最低6位字符', trigger: 'blur' }
-  // ],
-  // nickName: [
-  //   { required: true, message: '请输入用户昵称', trigger: 'blur' }
-  // ],
-  phone: [
-    { pattern: /^1([38][0-9]|4[014-9]|[59][0-35-9]|6[2567]|7[0-8])\d{8}$/, message: '请输入合法手机号', trigger: 'blur' },
-  ],
-  email: [
-    { pattern: /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g, message: '请输入正确的邮箱', trigger: 'blur' },
+    { min: 2, message: '最低2位字符', trigger: 'blur' }
   ]
-  // authorityId: [
-  //   { required: true, message: '请选择用户角色', trigger: 'blur' }
-  // ]
 })
 const userForm = ref(null)
 const enteraddCustomerDialog = async() => {

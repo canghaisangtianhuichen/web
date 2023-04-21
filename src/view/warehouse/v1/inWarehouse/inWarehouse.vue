@@ -1,35 +1,47 @@
 <template>
   <div>
     <warning-bar title="注：右上角头像下拉可切换角色" />
-    <div class="gva-table-box">
-      <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
-      </div>
+    <div class="gva-table-box">v>
       <el-table
         :data="tableData"
         row-key="id"
       >
+        "createdAt": "2023-03-24T16:53:07+08:00",
+        "updatedAt": "0001-01-01T00:00:00Z",
+        "orderNumber": "RK1001",
+        "warehouseId": 1,
+        "warehouseName": "仓库一",
+        "staffId": 1,
+        "staffName": "员工一",
+        "weight": 400,
+        "type": "销售出库",
+        "fromId": 1,
+        "fromWhere": "客户一"
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
         <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
-        <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
-        <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
+        <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+        <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+        <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+        <el-table-column align="left" label="入库方式" min-width="180" prop="type" />
+        <el-table-column align="left" label="来源" min-width="180" prop="fromWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
-          <template #default="scope">
-            <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此用户吗</p>
-              <div style="text-align: right; margin-top: 8px;">
-                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
-              </div>
-              <template #reference>
-                <el-button type="primary" link icon="delete">删除</el-button>
-              </template>
-            </el-popover>
-            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-            <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
-          </template>
-        </el-table-column>
+        <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
+<!--        <el-table-column label="操作" min-width="250" fixed="right">-->
+<!--          <template #default="scope">-->
+<!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
+<!--              <p>确定要删除此用户吗</p>-->
+<!--              <div style="text-align: right; margin-top: 8px;">-->
+<!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
+<!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
+<!--              </div>-->
+<!--              <template #reference>-->
+<!--                <el-button type="primary" link icon="delete">删除</el-button>-->
+<!--              </template>-->
+<!--            </el-popover>-->
+<!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
+<!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+<!--          </template>-->
+<!--        </el-table-column>-->
 
       </el-table>
       <div class="gva-pagination">
@@ -118,10 +130,10 @@ export default {
 <script setup>
 
 import {
-  getCustomersList,
-  addCustomer,
-  deleteCustomer,
-  updateCustomer
+  getInWarehousesList,
+  // addCustomer,
+  // deleteCustomer,
+  // updateCustomer
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -181,7 +193,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: 1, pageSize: 10 })
+  const table = await getInWarehousesList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -248,21 +260,13 @@ const setOptions = (authData) => {
 }
 
 const deleteCustomerFunc = async(row) => {
-  const req = ref({
-    ...Tem.value
-  })
-  req.value.id = row.id
-  console.log(req.value)
-  const res = await deleteCustomer(req)
+  const res = await deleteCustomer({ id: row.id })
   if (res.code === 0) {
     ElMessage.success('删除成功')
     row.visible = false
     await getTableData()
   }
 }
-const Tem = ref({
-  id: 0,
-})
 // 弹窗相关
 const userInfo = ref({
   name: '',

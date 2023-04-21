@@ -91,3 +91,132 @@ export const updateCustomer = (data) => {
     data: data
   })
 }
+export const addSupplier = (data) => {
+  return service({
+    url: '/warehouse/v1/addSupplier',
+    method: 'post',
+    data: data
+  })
+}
+export const updateSupplier = (data) => {
+  return service({
+    url: '/warehouse/v1/updateSupplier',
+    method: 'post',
+    data: data
+  })
+}
+export const deleteSupplier = (data) => {
+  return service({
+    url: '/warehouse/v1/deleteSupplier',
+    method: 'post',
+    data: data
+  })
+}
+export const addWarehouse = (data) => {
+  return service({
+    url: '/warehouse/v1/addWarehouse',
+    method: 'post',
+    data: data
+  })
+}
+export const updateWarehouse = (data) => {
+  return service({
+    url: '/warehouse/v1/updateWarehouse',
+    method: 'post',
+    data: data
+  })
+}
+export const deleteWarehouse = (data) => {
+  return service({
+    url: '/warehouse/v1/deleteWarehouse',
+    method: 'post',
+    data: data
+  })
+}
+export const addStaff = (data) => {
+  return service({
+    url: '/warehouse/v1/addStaff',
+    method: 'post',
+    data: data
+  })
+}
+export const updateStaff = (data) => {
+  return service({
+    url: '/warehouse/v1/updateStaff',
+    method: 'post',
+    data: data
+  })
+}
+export const deleteStaff = (data) => {
+  return service({
+    url: '/warehouse/v1/deleteStaff',
+    method: 'post',
+    data: data
+  })
+}
+
+// -------------------------------------------v2
+export const getV2GoodsList = (data) => {
+  return service({
+    url: "/warehouse/v2/getGoodsList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2StaffsList = (data) => {
+  return service({
+    url: "/warehouse/v2/getStaffsList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2CustomersList = (data) => {
+  return service({
+    url: "/warehouse/v2/getCustomersList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2SuppliersList = (data) => {
+  return service({
+    url: "/warehouse/v2/getSuppliersList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2GoodsShelfsList = (data) => {
+  return service({
+    url: "/warehouse/v2/getGoodsShelfsList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2OutWarehousesList = (data) => {
+  return service({
+    url: "/warehouse/v2/getOutWarehousesList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2OutWarehousesDetail = (data) => {
+  return service({
+    url: "/warehouse/v2/getOutWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getV2InWarehousesList = (data) => {
+  return service({
+    url: "/warehouse/v2/getInWarehousesList" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+// 获取客户列表
+export const getV2InWarehousesDetail = (data) => {
+  return service({
+    url: "/warehouse/v2/getInWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
