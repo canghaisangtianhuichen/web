@@ -17,22 +17,22 @@
         <el-table-column align="left" label="来源" min-width="180" prop="fromWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
         <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
-<!--        <el-table-column label="操作" min-width="250" fixed="right">-->
-<!--          <template #default="scope">-->
-<!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
-<!--              <p>确定要删除此用户吗</p>-->
-<!--              <div style="text-align: right; margin-top: 8px;">-->
-<!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
-<!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
-<!--              </div>-->
-<!--              <template #reference>-->
-<!--                <el-button type="primary" link icon="delete">删除</el-button>-->
-<!--              </template>-->
-<!--            </el-popover>-->
-<!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
-<!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+        <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
+        <!--              <p>确定要删除此用户吗</p>-->
+        <!--              <div style="text-align: right; margin-top: 8px;">-->
+        <!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
+        <!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
+        <!--              </div>-->
+        <!--              <template #reference>-->
+        <!--                <el-button type="primary" link icon="delete">删除</el-button>-->
+        <!--              </template>-->
+        <!--            </el-popover>-->
+        <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
+        <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
 
       </el-table>
       <div class="gva-pagination">
@@ -50,57 +50,46 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="用户"
-      :show-close="false"
+      :show-close="true"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
+      destroy-on-close
+      width="1000px"
     >
-      <div style="height:60vh;overflow:auto;padding:0 12px;">
-        <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">
-          <!--          <el-form-item v-if="dialogFlag === 'add'" label="用户名" prop="name">-->
-          <!--            <el-input v-model="userInfo.userName" />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item v-if="dialogFlag === 'add'" label="密码" prop="password">-->
-          <!--            <el-input v-model="userInfo.password" />-->
-          <!--          </el-form-item>-->
-          <el-form-item label="姓名" prop="name">
-            <el-input v-model="userInfo.name" />
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="userInfo.phone" />
-          </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="userInfo.email" />
-          </el-form-item>
-          <!--          <el-form-item label="用户角色" prop="authorityId">-->
-          <!--            <el-cascader-->
-          <!--              v-model="userInfo.authorityIds"-->
-          <!--              style="width:100%"-->
-          <!--              :options="authOptions"-->
-          <!--              :show-all-levels="false"-->
-          <!--              :props="{ multiple:true,checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"-->
-          <!--              :clearable="false"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="启用" prop="disabled">-->
-          <!--            <el-switch-->
-          <!--              v-model="userInfo.enable"-->
-          <!--              inline-prompt-->
-          <!--              :active-value="1"-->
-          <!--              :inactive-value="2"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="头像" label-width="80px">-->
-          <!--            <div style="display:inline-block" @click="openHeaderChange">-->
-          <!--              <img v-if="userInfo.headerImg" alt="头像" class="header-img-box" :src="(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg">-->
-          <!--              <div v-else class="header-img-box">从媒体库选择</div>-->
-          <!--            </div>-->
-          <!--          </el-form-item>-->
+      <header>
+        <div style="margin-bottom: 20px;">
+          <el-button type="primary" @click="addChild">点击添加儿童</el-button>
+        </div>
+      </header>
 
-        </el-form>
-
-      </div>
-
+      <section style="height: 300px; overflow: auto">
+        <ul>
+          <template v-for="(item,index) in list">
+          <span :key="index" v-if="item.type === 'child'">
+            <el-form v-model='form' inline>
+              <el-form-item label="货物">
+                <el-select v-model="form[index].huowu" placeholder="please select your zone">
+                  <el-option label="Zone one" value="shanghai" />
+                  <el-option label="Zone two" value="beijing" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="货架">
+                <el-select v-model="form[index].huojia" placeholder="please select your zone">
+                  <el-option label="Zone one" value="shanghai" />
+                  <el-option label="Zone two" value="beijing" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="重量">
+                <el-input v-model="form[index].zhongliang" />
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="delChild">删除</el-button>
+              </el-form-item>
+            </el-form>
+          </span>
+          </template>
+        </ul>
+      </section>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeaddCustomerDialog">取 消</el-button>
@@ -133,7 +122,7 @@ import ChooseImg from '@/components/chooseImg/index.vue'
 import WarningBar from '@/components/warningBar/warningBar.vue'
 // import { setUserInfo, resetPassword } from '@/api/user.js'
 
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
@@ -291,29 +280,29 @@ const rules = ref({
 const userForm = ref(null)
 const enteraddCustomerDialog = async() => {
   // userInfo.value.authorityId = userInfo.value.authorityIds[0]
-  userForm.value.validate(async valid => {
-    if (valid) {
-      const req = {
-        ...userInfo.value
-      }
-      if (dialogFlag.value === 'add') {
-        const res = await addCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '创建成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
-      if (dialogFlag.value === 'edit') {
-        const res = await updateCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
+  const len = list.value.length;
+  for (let i=0; i<len; i++){
+    if(form[i].huowu === '' || form[i].huojia === '' || form[i].zhongliang === '') {
+      ElMessage({
+        message: '货物信息不能为空',
+        type: 'error',
+      })
+      break
     }
-  })
+  }
+
+  for (const value of form) {
+    if (value.huowu !== '' && value.huojia !== '' && value.zhongliang !== '') {
+      listHuowu.value.push(value.huowu)
+      listHuojia.value.push(value.huojia)
+      listZhongliang.value.push(value.zhongliang)
+    }
+  }
+
+  console.log(listHuowu.value)
+  console.log(listHuojia.value)
+  console.log(listZhongliang.value)
+
 }
 
 const addCustomerDialog = ref(false)
@@ -362,6 +351,39 @@ const openEdit = (row) => {
   addCustomerDialog.value = true
 }
 
+const addUser = () => {
+  addCustomerDialog.value = true
+}
+
+ const child = ref(0)
+ const list = ref([])
+
+const form = reactive([
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' }])
+
+const listHuowu = ref([])
+const listHuojia = ref([])
+const listZhongliang = ref([])
+
+
+const addChild = () => {
+  list.value.push({
+    type: 'child'
+  })
+}
+const delChild = () => {
+  list.value.pop()
+}
+
 </script>
 
 <style lang="scss">
@@ -404,4 +426,9 @@ const openEdit = (row) => {
   font-size: 16px;
   margin-left: 2px;
 }
+#divRoot {
+  width: 100%;
+  height: auto;
+}
+
 </style>

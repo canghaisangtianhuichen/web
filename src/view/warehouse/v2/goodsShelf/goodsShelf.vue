@@ -3,30 +3,33 @@
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
+        <el-button type="primary" icon="plus" @click="temCustomer">新增货架</el-button>
       </div>
       <el-table
         :data="tableData"
         row-key="id"
       >
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
-        <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
-        <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
-        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+        <el-table-column align="left" label="货架" min-width="150" prop="name" />
+        <!--        <el-table-column align="left" label="仓库" min-width="180" prop="warehouseName" />-->
+        <el-table-column align="left" label="货物" min-width="180" prop="goodsName" />
+        <el-table-column align="left" label="货物重量" min-width="150" prop="realTimeWeight" />
+        <el-table-column align="left" label="载重" min-width="150" prop="maxWeight" />
+        <el-table-column align="left" label="创建时间" min-width="150" prop="createdAt" />
+        <el-table-column align="left" label="更新时间" min-width="150" prop="updatedAt" />
         <el-table-column label="操作" min-width="250" fixed="right">
           <template #default="scope">
             <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此用户吗</p>
+              <p>确定要删除此货架吗</p>
               <div style="text-align: right; margin-top: 8px;">
                 <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
+                <el-button type="primary" @click="deleteV2GoodsShelfFunc(scope.row)">确定</el-button>
               </div>
               <template #reference>
                 <el-button type="primary" link icon="delete">删除</el-button>
               </template>
             </el-popover>
-            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
+            <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
             <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
           </template>
         </el-table-column>
@@ -60,15 +63,15 @@
           <!--          <el-form-item v-if="dialogFlag === 'add'" label="密码" prop="password">-->
           <!--            <el-input v-model="userInfo.password" />-->
           <!--          </el-form-item>-->
-          <el-form-item label="姓名" prop="name">
+          <el-form-item label="货架名" prop="name">
             <el-input v-model="userInfo.name" />
           </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="userInfo.phone" />
-          </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="userInfo.email" />
-          </el-form-item>
+          <!--          <el-form-item label="手机号" prop="phone">-->
+          <!--            <el-input v-model="userInfo.phone" />-->
+          <!--          </el-form-item>-->
+          <!--          <el-form-item label="邮箱" prop="email">-->
+          <!--            <el-input v-model="userInfo.email" />-->
+          <!--          </el-form-item>-->
           <!--          <el-form-item label="用户角色" prop="authorityId">-->
           <!--            <el-cascader-->
           <!--              v-model="userInfo.authorityIds"-->
@@ -111,17 +114,17 @@
 
 <script>
 export default {
-  name: 'Customer',
+  name: 'User',
 }
 </script>
 
 <script setup>
 
 import {
-  getCustomersList,
-  addCustomer,
-  deleteCustomer,
-  updateCustomer
+  getV2GoodsShelfsList,
+  addGoodsShelf,
+  deleteGoodsShelf,
+  // updateGoodsShelf
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -181,7 +184,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: page.value, pageSize: pageSize.value })
+  const table = await getV2GoodsShelfsList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -247,8 +250,8 @@ const setOptions = (authData) => {
   setAuthorityOptions(authData, authOptions.value)
 }
 
-const deleteCustomerFunc = async(row) => {
-  const res = await deleteCustomer({ id: row.id })
+const deleteV2GoodsShelfFunc = async(row) => {
+  const res = await deleteGoodsShelf({ name: row.name, warehouseId: row.warehouseId })
   if (res.code === 0) {
     ElMessage.success('删除成功')
     row.visible = false
@@ -258,7 +261,7 @@ const deleteCustomerFunc = async(row) => {
 // 弹窗相关
 const userInfo = ref({
   name: '',
-  phone: '',
+  phone: 0,
   email: '',
   enable: 1,
 })
@@ -266,8 +269,7 @@ const userInfo = ref({
 const rules = ref({
   Name: [
     { required: true, message: '请输入姓名', trigger: 'blur' },
-    { min: 2, message: '最低5位字符', trigger: 'blur' }
-  ],
+  ]
   // password: [
   //   { required: true, message: '请输入用户密码', trigger: 'blur' },
   //   { min: 6, message: '最低6位字符', trigger: 'blur' }
@@ -275,12 +277,12 @@ const rules = ref({
   // nickName: [
   //   { required: true, message: '请输入用户昵称', trigger: 'blur' }
   // ],
-  phone: [
-    { pattern: /^1([38][0-9]|4[014-9]|[59][0-35-9]|6[2567]|7[0-8])\d{8}$/, message: '请输入合法手机号', trigger: 'blur' },
-  ],
-  email: [
-    { pattern: /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g, message: '请输入正确的邮箱', trigger: 'blur' },
-  ]
+  // phone: [
+  //   { pattern: /^1([38][0-9]|4[014-9]|[59][0-35-9]|6[2567]|7[0-8])\d{8}$/, message: '请输入合法手机号', trigger: 'blur' },
+  // ],
+  // email: [
+  //   { pattern: /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g, message: '请输入正确的邮箱', trigger: 'blur' },
+  // ]
   // authorityId: [
   //   { required: true, message: '请选择用户角色', trigger: 'blur' }
   // ]
@@ -291,27 +293,24 @@ const enteraddCustomerDialog = async() => {
   userForm.value.validate(async valid => {
     if (valid) {
       const req = {
-        name: userInfo.value.name,
-        phone: userInfo.value.phone,
-        email: userInfo.value.email,
-        enable: userInfo.value.enable,
+        ...userInfo.value
       }
       if (dialogFlag.value === 'add') {
-        const res = await addCustomer(req)
+        const res = await addGoodsShelf(req)
         if (res.code === 0) {
           ElMessage({ type: 'success', message: '创建成功' })
           await getTableData()
           closeaddCustomerDialog()
         }
       }
-      if (dialogFlag.value === 'edit') {
-        const res = await updateCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
+      // if (dialogFlag.value === 'edit') {
+      //   const res = await updateCustomer(req)
+      //   if (res.code === 0) {
+      //     ElMessage({ type: 'success', message: '编辑成功' })
+      //     await getTableData()
+      //     closeaddCustomerDialog()
+      //   }
+      // }
     }
   })
 }

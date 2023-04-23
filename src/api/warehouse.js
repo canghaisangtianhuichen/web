@@ -220,3 +220,33 @@ export const getV2InWarehousesDetail = (data) => {
     data: data
   })
 }
+export const addGood = (data) => {
+  return service({
+    url: '/warehouse/v2/addGood',
+    method: 'post',
+    data: data
+  })
+}
+
+export const deleteGood = (data) => {
+  return service({
+    url: '/warehouse/v2/deleteGood',
+    method: 'post',
+    data: data
+  })
+}
+export const addGoodsShelf = (data) => {
+  return service({
+    url: '/warehouse/v2/addGoodsShelf',
+    method: 'post',
+    data: data
+  })
+}
+
+export const deleteGoodsShelf = (data) => {
+  return service({
+    url: '/warehouse/v2/deleteGoodsShelf',
+    method: 'post',
+    data: data
+  })
+}

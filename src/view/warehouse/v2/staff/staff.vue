@@ -2,34 +2,36 @@
   <div>
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
-      <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
-      </div>
+<!--      <div class="gva-btn-list">-->
+<!--        <el-button type="primary" icon="plus" @click="temCustomer">新增员工</el-button>-->
+<!--      </div>-->
       <el-table
         :data="tableData"
         row-key="id"
       >
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
+        <el-table-column align="left" label="员工名" min-width="150" prop="name" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
+<!--        <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />-->
+<!--        <el-table-column align="left" label="状态" min-width="180" prop="status" />-->
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
-          <template #default="scope">
-            <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此用户吗</p>
-              <div style="text-align: right; margin-top: 8px;">
-                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
-              </div>
-              <template #reference>
-                <el-button type="primary" link icon="delete">删除</el-button>
-              </template>
-            </el-popover>
-            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-            <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
-          </template>
-        </el-table-column>
+<!--        <el-table-column label="操作" min-width="250" fixed="right">-->
+<!--          <template #default="scope">-->
+<!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
+<!--              <p>确定要删除此员工吗</p>-->
+<!--              <div style="text-align: right; margin-top: 8px;">-->
+<!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
+<!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
+<!--              </div>-->
+<!--              <template #reference>-->
+<!--                <el-button type="primary" link icon="delete">删除</el-button>-->
+<!--              </template>-->
+<!--            </el-popover>-->
+<!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
+<!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+<!--          </template>-->
+<!--        </el-table-column>-->
 
       </el-table>
       <div class="gva-pagination">
@@ -47,7 +49,7 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="用户"
+      title="员工"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
@@ -60,8 +62,17 @@
           <!--          <el-form-item v-if="dialogFlag === 'add'" label="密码" prop="password">-->
           <!--            <el-input v-model="userInfo.password" />-->
           <!--          </el-form-item>-->
-          <el-form-item label="姓名" prop="name">
-            <el-input v-model="userInfo.name" />
+          <el-form-item label="用户名" prop="userName">
+            <el-input v-model="userInfo.userName" />
+          </el-form-item>
+          <el-form-item label="密码" prop="passWord">
+            <el-input v-model="userInfo.passWord" />
+          </el-form-item>
+          <el-form-item label="昵称" prop="nickName">
+            <el-input v-model="userInfo.nickName" />
+          </el-form-item>
+          <el-form-item label="仓库" prop="warehouseId">
+            <el-input v-model="userInfo.phone" />
           </el-form-item>
           <el-form-item label="手机号" prop="phone">
             <el-input v-model="userInfo.phone" />
@@ -69,30 +80,20 @@
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="userInfo.email" />
           </el-form-item>
-          <!--          <el-form-item label="用户角色" prop="authorityId">-->
-          <!--            <el-cascader-->
-          <!--              v-model="userInfo.authorityIds"-->
-          <!--              style="width:100%"-->
-          <!--              :options="authOptions"-->
-          <!--              :show-all-levels="false"-->
-          <!--              :props="{ multiple:true,checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"-->
-          <!--              :clearable="false"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="启用" prop="disabled">-->
-          <!--            <el-switch-->
-          <!--              v-model="userInfo.enable"-->
-          <!--              inline-prompt-->
-          <!--              :active-value="1"-->
-          <!--              :inactive-value="2"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="头像" label-width="80px">-->
-          <!--            <div style="display:inline-block" @click="openHeaderChange">-->
-          <!--              <img v-if="userInfo.headerImg" alt="头像" class="header-img-box" :src="(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg">-->
-          <!--              <div v-else class="header-img-box">从媒体库选择</div>-->
-          <!--            </div>-->
-          <!--          </el-form-item>-->
+          <el-form-item label="启用" prop="disabled">
+            <el-switch
+              v-model="userInfo.enable"
+              inline-prompt
+              :active-value="1"
+              :inactive-value="2"
+            />
+          </el-form-item>
+          <el-form-item label="头像" label-width="80px">
+            <div style="display:inline-block" @click="openHeaderChange">
+              <img v-if="userInfo.headerImg" alt="头像" class="header-img-box" :src="(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg">
+              <div v-else class="header-img-box">从媒体库选择</div>
+            </div>
+          </el-form-item>
 
         </el-form>
 
@@ -111,17 +112,17 @@
 
 <script>
 export default {
-  name: 'Customer',
+  name: 'User',
 }
 </script>
 
 <script setup>
 
 import {
-  getCustomersList,
-  addCustomer,
-  deleteCustomer,
-  updateCustomer
+  getV2StaffsList,
+  // addStaff,
+  // deleteStaff,
+  // updateStaff
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -181,7 +182,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: page.value, pageSize: pageSize.value })
+  const table = await getV2StaffsList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -237,9 +238,9 @@ initPage()
 // }
 
 const chooseImg = ref(null)
-// const openHeaderChange = () => {
-//   chooseImg.value.open()
-// }
+const openHeaderChange = () => {
+  chooseImg.value.open()
+}
 
 const authOptions = ref([])
 const setOptions = (authData) => {
@@ -247,20 +248,32 @@ const setOptions = (authData) => {
   setAuthorityOptions(authData, authOptions.value)
 }
 
-const deleteCustomerFunc = async(row) => {
-  const res = await deleteCustomer({ id: row.id })
-  if (res.code === 0) {
-    ElMessage.success('删除成功')
-    row.visible = false
-    await getTableData()
-  }
-}
+// const deleteCustomerFunc = async(row) => {
+//   const res = await deleteStaff({ id: row.id })
+//   if (res.code === 0) {
+//     ElMessage.success('删除成功')
+//     row.visible = false
+//     await getTableData()
+//   }
+// }
 // 弹窗相关
 const userInfo = ref({
-  name: '',
-  phone: '',
-  email: '',
+  userName: '',
+  passWord: '',
+  nickName: '',
+  headerImg: '',
   enable: 1,
+  warehouseId: 0,
+  phone: 0,
+  email: '',
+})
+const updateUserInfo = ref({
+  nickName: '',
+  headerImg: '',
+  enable: 1,
+  warehouseId: 0,
+  phone: 0,
+  email: '',
 })
 
 const rules = ref({
@@ -286,35 +299,32 @@ const rules = ref({
   // ]
 })
 const userForm = ref(null)
-const enteraddCustomerDialog = async() => {
-  // userInfo.value.authorityId = userInfo.value.authorityIds[0]
-  userForm.value.validate(async valid => {
-    if (valid) {
-      const req = {
-        name: userInfo.value.name,
-        phone: userInfo.value.phone,
-        email: userInfo.value.email,
-        enable: userInfo.value.enable,
-      }
-      if (dialogFlag.value === 'add') {
-        const res = await addCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '创建成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
-      if (dialogFlag.value === 'edit') {
-        const res = await updateCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
-    }
-  })
-}
+// const enteraddCustomerDialog = async() => {
+//   // userInfo.value.authorityId = userInfo.value.authorityIds[0]
+//   userForm.value.validate(async valid => {
+//     if (valid) {
+//       const req = {
+//         ...userInfo.value
+//       }
+//       if (dialogFlag.value === 'add') {
+//         const res = await addStaff(req)
+//         if (res.code === 0) {
+//           ElMessage({ type: 'success', message: '创建成功' })
+//           await getTableData()
+//           closeaddCustomerDialog()
+//         }
+//       }
+//       if (dialogFlag.value === 'edit') {
+//         const res = await updateStaff(req)
+//         if (res.code === 0) {
+//           ElMessage({ type: 'success', message: '编辑成功' })
+//           await getTableData()
+//           closeaddCustomerDialog()
+//         }
+//       }
+//     }
+//   })
+// }
 
 const addCustomerDialog = ref(false)
 const closeaddCustomerDialog = () => {

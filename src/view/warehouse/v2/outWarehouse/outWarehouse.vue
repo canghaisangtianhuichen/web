@@ -3,33 +3,36 @@
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
+        <el-button type="primary" icon="plus" @click="addUser">新增出库单</el-button>
       </div>
       <el-table
         :data="tableData"
         row-key="id"
       >
-        <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
-        <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
-        <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
+        <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
+        <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+        <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+        <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+        <el-table-column align="left" label="出库方式" min-width="180" prop="type" />
+        <el-table-column align="left" label="去向" min-width="180" prop="toWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
-          <template #default="scope">
-            <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此用户吗</p>
-              <div style="text-align: right; margin-top: 8px;">
-                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
-              </div>
-              <template #reference>
-                <el-button type="primary" link icon="delete">删除</el-button>
-              </template>
-            </el-popover>
-            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-            <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
-          </template>
-        </el-table-column>
+        <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
+        <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
+        <!--              <p>确定要删除此用户吗</p>-->
+        <!--              <div style="text-align: right; margin-top: 8px;">-->
+        <!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
+        <!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
+        <!--              </div>-->
+        <!--              <template #reference>-->
+        <!--                <el-button type="primary" link icon="delete">删除</el-button>-->
+        <!--              </template>-->
+        <!--            </el-popover>-->
+        <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
+        <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
 
       </el-table>
       <div class="gva-pagination">
@@ -47,7 +50,7 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="用户"
+      title="出库单"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
@@ -111,17 +114,17 @@
 
 <script>
 export default {
-  name: 'Customer',
+  name: 'User',
 }
 </script>
 
 <script setup>
 
 import {
-  getCustomersList,
-  addCustomer,
-  deleteCustomer,
-  updateCustomer
+  getV2OutWarehousesList,
+  // addCustomer,
+  // deleteCustomer,
+  // updateCustomer
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -136,23 +139,23 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
   AuthorityData &&
-        AuthorityData.forEach(item => {
-          if (item.children && item.children.length) {
-            const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName,
-              children: []
-            }
-            setAuthorityOptions(item.children, option.children)
-            optionsData.push(option)
-          } else {
-            const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName
-            }
-            optionsData.push(option)
-          }
-        })
+  AuthorityData.forEach(item => {
+    if (item.children && item.children.length) {
+      const option = {
+        authorityId: item.authorityId,
+        authorityName: item.authorityName,
+        children: []
+      }
+      setAuthorityOptions(item.children, option.children)
+      optionsData.push(option)
+    } else {
+      const option = {
+        authorityId: item.authorityId,
+        authorityName: item.authorityName
+      }
+      optionsData.push(option)
+    }
+  })
 }
 
 const page = ref(1)
@@ -181,7 +184,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: page.value, pageSize: pageSize.value })
+  const table = await getV2OutWarehousesList({ page: 1, pageSize: 10 })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -258,7 +261,7 @@ const deleteCustomerFunc = async(row) => {
 // 弹窗相关
 const userInfo = ref({
   name: '',
-  phone: '',
+  phone: 0,
   email: '',
   enable: 1,
 })
@@ -291,10 +294,7 @@ const enteraddCustomerDialog = async() => {
   userForm.value.validate(async valid => {
     if (valid) {
       const req = {
-        name: userInfo.value.name,
-        phone: userInfo.value.phone,
-        email: userInfo.value.email,
-        enable: userInfo.value.enable,
+        ...userInfo.value
       }
       if (dialogFlag.value === 'add') {
         const res = await addCustomer(req)
