@@ -58,35 +58,45 @@
     >
       <header>
         <div style="margin-bottom: 20px;">
-          <el-button type="primary" @click="addChild">点击添加儿童</el-button>
+          <el-button type="primary" @click="addChild">点击添加入库单</el-button>
+        </div>
+        <div>
+          <el-form-item label="入库类型">
+            <el-select v-model="fromType" placeholder="请选择入库类型">
+              <el-option v-for="item in temType" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="入库来源">
+            <el-select v-model="fromWhere" placeholder="请选择入库来源">
+              <el-option v-for="item in tableData3" :key="item.index" :label="item.name" :value="item.id" />
+            </el-select>
+          </el-form-item>
         </div>
       </header>
 
       <section style="height: 300px; overflow: auto">
         <ul>
           <template v-for="(item,index) in list">
-          <span :key="index" v-if="item.type === 'child'">
-            <el-form v-model='form' inline>
-              <el-form-item label="货物">
-                <el-select v-model="form[index].huowu" placeholder="please select your zone">
-                  <el-option label="Zone one" value="shanghai" />
-                  <el-option label="Zone two" value="beijing" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="货架">
-                <el-select v-model="form[index].huojia" placeholder="please select your zone">
-                  <el-option label="Zone one" value="shanghai" />
-                  <el-option label="Zone two" value="beijing" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="重量">
-                <el-input v-model="form[index].zhongliang" />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="delChild">删除</el-button>
-              </el-form-item>
-            </el-form>
-          </span>
+            <span v-if="item.type === 'child'" :key="index">
+              <el-form v-model="form" inline>
+                <el-form-item label="货物">
+                  <el-select v-model="form[index].huowu" placeholder="请选择货物">
+                    <el-option v-for="item in tableData1" :key="item.index" :label="item.name" :value="item.id" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="货架">
+                  <el-select v-model="form[index].huojia" placeholder="请选择货架">
+                    <el-option v-for="item in tableData2" :key="item.index" :label="item.name" :value="item.name" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="重量">
+                  <el-input v-model="form[index].zhongliang" />
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="delChild">删除</el-button>
+                </el-form-item>
+              </el-form>
+            </span>
           </template>
         </ul>
       </section>
@@ -111,6 +121,10 @@ export default {
 
 import {
   getV2InWarehousesList,
+  getV2GoodsList,
+  getV2GoodsShelfsList,
+  getV2SuppliersList,
+  inWarehouse,
   // addCustomer,
   // deleteCustomer,
   // updateCustomer
@@ -124,6 +138,7 @@ import WarningBar from '@/components/warningBar/warningBar.vue'
 
 import { nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { register } from '@/api/user'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
@@ -151,6 +166,10 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
+const tableData1 = ref([])
+const tableData2 = ref([])
+const tableData3 = ref([])
+
 // 分页
 const handleSizeChange = (val) => {
   pageSize.value = val
@@ -179,6 +198,18 @@ const getTableData = async() => {
     total.value = table.data.total
     page.value = table.data.page
     pageSize.value = table.data.pageSize
+  }
+  const table1 = await getV2GoodsList({ page: 1, pageSize: 1000 })
+  if (table1.code === 0) {
+    tableData1.value = table1.data.list
+  }
+  const table2 = await getV2GoodsShelfsList({ page: 1, pageSize: 1000 })
+  if (table2.code === 0) {
+    tableData2.value = table2.data.list
+  }
+  const table3 = await getV2SuppliersList({ page: 1, pageSize: 1000 })
+  if (table3.code === 0) {
+    tableData3.value = table3.data.list
   }
 }
 
@@ -254,6 +285,14 @@ const userInfo = ref({
   email: '',
   enable: 1,
 })
+const inWarehouseInfo = ref({
+  totalWeight: 0,
+  type: '',
+  fromId: 0,
+  goodsId: [],
+  weight: [],
+  shelfName: [],
+})
 
 const rules = ref({
   Name: [
@@ -280,9 +319,9 @@ const rules = ref({
 const userForm = ref(null)
 const enteraddCustomerDialog = async() => {
   // userInfo.value.authorityId = userInfo.value.authorityIds[0]
-  const len = list.value.length;
-  for (let i=0; i<len; i++){
-    if(form[i].huowu === '' || form[i].huojia === '' || form[i].zhongliang === '') {
+  const len = list.value.length
+  for (let i = 0; i < len; i++) {
+    if (form[i].huowu === '' || form[i].huojia === '' || form[i].zhongliang === '') {
       ElMessage({
         message: '货物信息不能为空',
         type: 'error',
@@ -295,21 +334,53 @@ const enteraddCustomerDialog = async() => {
     if (value.huowu !== '' && value.huojia !== '' && value.zhongliang !== '') {
       listHuowu.value.push(value.huowu)
       listHuojia.value.push(value.huojia)
-      listZhongliang.value.push(value.zhongliang)
+      listZhongliang.value.push(Number(value.zhongliang))
+      inWarehouseInfo.value.totalWeight = inWarehouseInfo.value.totalWeight + Number(value.zhongliang)
     }
   }
-
+  console.log(fromType.value)
+  console.log(fromWhere.value)
   console.log(listHuowu.value)
   console.log(listHuojia.value)
   console.log(listZhongliang.value)
-
+  inWarehouseInfo.value.type = fromType.value
+  inWarehouseInfo.value.fromId = Number(fromWhere.value)
+  inWarehouseInfo.value.goodsId = listHuowu.value
+  inWarehouseInfo.value.shelfName = listHuojia.value
+  inWarehouseInfo.value.weight = listZhongliang.value
+  console.log(inWarehouseInfo)
+  const req = {
+    ...inWarehouseInfo.value
+  }
+  console.log(req)
+  const res = await inWarehouse({ ...inWarehouseInfo.value })
+  // const res = await inWarehouse(req)
+  if (res.code === 0) {
+    ElMessage({ type: 'success', message: '创建成功' })
+    await getTableData()
+  }
+  closeaddCustomerDialog()
 }
 
 const addCustomerDialog = ref(false)
 const closeaddCustomerDialog = () => {
-  userForm.value.resetFields()
-  userInfo.value.headerImg = ''
-  userInfo.value.authorityIds = []
+  // userForm.value.resetFields()
+  // userInfo.value.headerImg = ''
+  // userInfo.value.authorityIds = []
+
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  fromType.value = ''
+  fromWhere.value = ''
+
   addCustomerDialog.value = false
 }
 
@@ -355,9 +426,10 @@ const addUser = () => {
   addCustomerDialog.value = true
 }
 
- const child = ref(0)
- const list = ref([])
-
+const child = ref(0)
+const list = ref([])
+const fromType = ref()
+const fromWhere = ref()
 const form = reactive([
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },
@@ -369,11 +441,24 @@ const form = reactive([
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' }])
+const deleteForm = reactive([
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' }])
 
+const temType = reactive([
+  { name: '调拨入库', id: '0' },
+  { name: '采购', id: '1' }])
 const listHuowu = ref([])
 const listHuojia = ref([])
 const listZhongliang = ref([])
-
 
 const addChild = () => {
   list.value.push({

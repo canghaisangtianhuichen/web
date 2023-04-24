@@ -250,3 +250,11 @@ export const deleteGoodsShelf = (data) => {
     data: data
   })
 }
+
+export const inWarehouse = (data) => {
+  return service({
+    url: '/warehouse/v2/inWarehouse',
+    method: 'post',
+    data: data
+  })
+}
