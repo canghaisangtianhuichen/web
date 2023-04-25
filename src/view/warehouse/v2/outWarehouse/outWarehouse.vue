@@ -184,7 +184,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getV2OutWarehousesList({ page: 1, pageSize: 10 })
+  const table = await getV2OutWarehousesList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total

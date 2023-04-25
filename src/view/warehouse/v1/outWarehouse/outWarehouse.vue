@@ -2,55 +2,56 @@
   <div>
     <warning-bar title="注：右上角头像下拉可切换角色" />
     <div class="gva-table-box">
-      <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="temCustomer">新增客户</el-button>
-      </div>
       <el-table
-        :data="tableData"
-        row-key="id"
+          :data="tableData"
+          row-key="id"
       >
-        <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="用户名" min-width="150" prop="name" />
-        <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
-        <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
+<!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
+        <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
+        <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+        <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+        <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+        <el-table-column align="left" label="入库方式" min-width="180" prop="type" />
+        <el-table-column align="left" label="来源" min-width="180" prop="toWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
-          <template #default="scope">
-            <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此用户吗</p>
-              <div style="text-align: right; margin-top: 8px;">
-                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
-                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
-              </div>
-              <template #reference>
-                <el-button type="primary" link icon="delete">删除</el-button>
-              </template>
-            </el-popover>
-            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-            <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
-          </template>
-        </el-table-column>
+        <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
+        <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
+        <!--              <p>确定要删除此用户吗</p>-->
+        <!--              <div style="text-align: right; margin-top: 8px;">-->
+        <!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
+        <!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
+        <!--              </div>-->
+        <!--              <template #reference>-->
+        <!--                <el-button type="primary" link icon="delete">删除</el-button>-->
+        <!--              </template>-->
+        <!--            </el-popover>-->
+        <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
+        <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
 
       </el-table>
       <div class="gva-pagination">
         <el-pagination
-          :current-page="page"
-          :page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
+            :current-page="page"
+            :page-size="pageSize"
+            :page-sizes="[10, 30, 50, 100]"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
         />
       </div>
     </div>
     <el-dialog
-      v-model="addCustomerDialog"
-      custom-class="user-dialog"
-      title="用户"
-      :show-close="false"
-      :close-on-press-escape="false"
-      :close-on-click-modal="false"
+        v-model="addCustomerDialog"
+        custom-class="user-dialog"
+        title="用户"
+        :show-close="false"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
     >
       <div style="height:60vh;overflow:auto;padding:0 12px;">
         <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">
@@ -118,10 +119,10 @@ export default {
 <script setup>
 
 import {
-  getCustomersList,
-  addCustomer,
-  deleteCustomer,
-  updateCustomer
+  getOutWarehousesList,
+  // addCustomer,
+  // deleteCustomer,
+  // updateCustomer
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -136,23 +137,23 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
   AuthorityData &&
-        AuthorityData.forEach(item => {
-          if (item.children && item.children.length) {
-            const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName,
-              children: []
-            }
-            setAuthorityOptions(item.children, option.children)
-            optionsData.push(option)
-          } else {
-            const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName
-            }
-            optionsData.push(option)
-          }
-        })
+  AuthorityData.forEach(item => {
+    if (item.children && item.children.length) {
+      const option = {
+        authorityId: item.authorityId,
+        authorityName: item.authorityName,
+        children: []
+      }
+      setAuthorityOptions(item.children, option.children)
+      optionsData.push(option)
+    } else {
+      const option = {
+        authorityId: item.authorityId,
+        authorityName: item.authorityName
+      }
+      optionsData.push(option)
+    }
+  })
 }
 
 const page = ref(1)
@@ -181,7 +182,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getCustomersList({ page: 1, pageSize: 10 })
+  const table = await getOutWarehousesList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total

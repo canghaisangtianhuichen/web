@@ -9,7 +9,7 @@
         :data="tableData"
         row-key="id"
       >
-        <el-table-column align="left" label="ID" min-width="50" prop="id" />
+<!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
         <el-table-column align="left" label="员工名" min-width="150" prop="name" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
@@ -182,7 +182,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getV2StaffsList({ page: 1, pageSize: 10 })
+  const table = await getV2StaffsList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total

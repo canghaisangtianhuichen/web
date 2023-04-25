@@ -9,7 +9,7 @@
         :data="tableData"
         row-key="id"
       >
-        <el-table-column align="left" label="ID" min-width="50" prop="id" />
+<!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
         <el-table-column align="left" label="仓库名" min-width="150" prop="name" />
         <el-table-column align="left" label="位置" min-width="180" prop="location" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
@@ -152,7 +152,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getWarehousesList({ page: 1, pageSize: 10 })
+  const table = await getWarehousesList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total

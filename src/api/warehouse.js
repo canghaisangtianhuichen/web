@@ -212,10 +212,17 @@ export const getV2InWarehousesList = (data) => {
     data: data
   })
 }
-// 获取客户列表
 export const getV2InWarehousesDetail = (data) => {
   return service({
     url: "/warehouse/v2/getInWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+//生成出/入库列表-获取仓库列表
+export const getV2WarehousesList = (data) => {
+  return service({
+    url: "/warehouse/v2/getWarehousesList" + "?page="+data.page+"&pageSize="+data.pageSize,
     method: 'get',
     data: data
   })

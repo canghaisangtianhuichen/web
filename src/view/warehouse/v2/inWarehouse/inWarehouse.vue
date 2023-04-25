@@ -124,7 +124,7 @@ import {
   getV2GoodsList,
   getV2GoodsShelfsList,
   getV2SuppliersList,
-  inWarehouse,
+  inWarehouse, getV2WarehousesList,
   // addCustomer,
   // deleteCustomer,
   // updateCustomer
@@ -169,6 +169,7 @@ const tableData = ref([])
 const tableData1 = ref([])
 const tableData2 = ref([])
 const tableData3 = ref([])
+const tableData4 = ref([])
 
 // 分页
 const handleSizeChange = (val) => {
@@ -192,7 +193,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getV2InWarehousesList({ page: 1, pageSize: 10 })
+  const table = await getV2InWarehousesList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -210,6 +211,10 @@ const getTableData = async() => {
   const table3 = await getV2SuppliersList({ page: 1, pageSize: 1000 })
   if (table3.code === 0) {
     tableData3.value = table3.data.list
+  }
+  const table4 = await getV2WarehousesList({ page: 1, pageSize: 1000 })
+  if (table4.code === 0) {
+    tableData4.value = table4.data.list
   }
 }
 

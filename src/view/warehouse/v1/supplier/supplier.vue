@@ -9,7 +9,7 @@
         :data="tableData"
         row-key="id"
       >
-        <el-table-column align="left" label="ID" min-width="50" prop="id" />
+<!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
         <el-table-column align="left" label="姓名" min-width="150" prop="name" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
@@ -141,7 +141,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getSuppliersList({ page: 1, pageSize: 10 })
+  const table = await getSuppliersList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -185,7 +185,7 @@ const deleteSupplierFunc = async(row) => {
 // 弹窗相关
 const userInfo = ref({
   name: '',
-  phone: 0,
+  phone: '',
   email: '',
   enable: 1,
 })
