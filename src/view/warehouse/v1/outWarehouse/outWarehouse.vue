@@ -15,8 +15,8 @@
         <el-table-column align="left" label="来源" min-width="180" prop="toWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
         <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
-        <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
-        <!--          <template #default="scope">-->
+                <el-table-column label="操作" min-width="250" fixed="right">
+                  <template #default="scope">
         <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
         <!--              <p>确定要删除此用户吗</p>-->
         <!--              <div style="text-align: right; margin-top: 8px;">-->
@@ -28,9 +28,11 @@
         <!--              </template>-->
         <!--            </el-popover>-->
         <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
-        <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
+                    <el-button type="primary" link icon="edit" @click="openDetail(scope.row)">详情</el-button>
+
+                    <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
+                  </template>
+                </el-table-column>
 
       </el-table>
       <div class="gva-pagination">
@@ -45,31 +47,31 @@
         />
       </div>
     </div>
-    <el-dialog
-        v-model="addCustomerDialog"
-        custom-class="user-dialog"
-        title="用户"
-        :show-close="false"
-        :close-on-press-escape="false"
-        :close-on-click-modal="false"
-    >
-      <div style="height:60vh;overflow:auto;padding:0 12px;">
-        <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">
+<!--    <el-dialog-->
+<!--        v-model="addCustomerDialog"-->
+<!--        custom-class="user-dialog"-->
+<!--        title="用户"-->
+<!--        :show-close="false"-->
+<!--        :close-on-press-escape="false"-->
+<!--        :close-on-click-modal="false"-->
+<!--    >-->
+<!--      <div style="height:60vh;overflow:auto;padding:0 12px;">-->
+<!--        <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">-->
           <!--          <el-form-item v-if="dialogFlag === 'add'" label="用户名" prop="name">-->
           <!--            <el-input v-model="userInfo.userName" />-->
           <!--          </el-form-item>-->
           <!--          <el-form-item v-if="dialogFlag === 'add'" label="密码" prop="password">-->
           <!--            <el-input v-model="userInfo.password" />-->
           <!--          </el-form-item>-->
-          <el-form-item label="姓名" prop="name">
-            <el-input v-model="userInfo.name" />
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="userInfo.phone" />
-          </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="userInfo.email" />
-          </el-form-item>
+<!--          <el-form-item label="姓名" prop="name">-->
+<!--            <el-input v-model="userInfo.name" />-->
+<!--          </el-form-item>-->
+<!--          <el-form-item label="手机号" prop="phone">-->
+<!--            <el-input v-model="userInfo.phone" />-->
+<!--          </el-form-item>-->
+<!--          <el-form-item label="邮箱" prop="email">-->
+<!--            <el-input v-model="userInfo.email" />-->
+<!--          </el-form-item>-->
           <!--          <el-form-item label="用户角色" prop="authorityId">-->
           <!--            <el-cascader-->
           <!--              v-model="userInfo.authorityIds"-->
@@ -95,18 +97,53 @@
           <!--            </div>-->
           <!--          </el-form-item>-->
 
-        </el-form>
+<!--        </el-form>-->
 
-      </div>
+<!--      </div>-->
 
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeaddCustomerDialog">取 消</el-button>
-          <el-button type="primary" @click="enteraddCustomerDialog">确 定</el-button>
+<!--      <template #footer>-->
+<!--        <div class="dialog-footer">-->
+<!--          <el-button @click="closeaddCustomerDialog">取 消</el-button>-->
+<!--          <el-button type="primary" @click="enteraddCustomerDialog">确 定</el-button>-->
+<!--        </div>-->
+<!--      </template>-->
+<!--    </el-dialog>-->
+<!--    <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`headerImg`" />-->
+    <el-dialog
+        v-model="addDetailDialog"
+        custom-class="user-dialog"
+        title="入库单详情"
+        :show-close="true"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
+    >
+      <div class="gva-table-box">
+        <el-table
+            :data="tableData1"
+            row-key="id"
+        >
+          <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
+          <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+          <el-table-column align="left" label="货物名" min-width="180" prop="goodsName" />
+          <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+          <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+          <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+          <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
+
+        </el-table>
+        <div class="gva-pagination">
+          <el-pagination
+              :current-page="page1"
+              :page-size="pageSize1"
+              :page-sizes="[10, 30, 50, 100]"
+              :total="total1"
+              layout="total, sizes, prev, pager, next, jumper"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+          />
         </div>
-      </template>
+      </div>
     </el-dialog>
-    <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`headerImg`" />
   </div>
 </template>
 
@@ -119,6 +156,7 @@ export default {
 <script setup>
 
 import {
+  getOutWarehousesDetail,
   getOutWarehousesList,
   // addCustomer,
   // deleteCustomer,
@@ -159,7 +197,11 @@ const setAuthorityOptions = (AuthorityData, optionsData) => {
 const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
+const page1 = ref(1)
+const total1 = ref(0)
+const pageSize1 = ref(10)
 const tableData = ref([])
+const tableData1 = ref([])
 // 分页
 const handleSizeChange = (val) => {
   pageSize.value = val
@@ -315,6 +357,7 @@ const enteraddCustomerDialog = async() => {
 }
 
 const addCustomerDialog = ref(false)
+const addDetailDialog = ref(false)
 const closeaddCustomerDialog = () => {
   userForm.value.resetFields()
   userInfo.value.headerImg = ''
@@ -358,6 +401,17 @@ const openEdit = (row) => {
   dialogFlag.value = 'edit'
   userInfo.value = JSON.parse(JSON.stringify(row))
   addCustomerDialog.value = true
+}
+const openDetail = async(row) => {
+  const table = await getOutWarehousesDetail({ orderNumber: row.orderNumber, page: page1.value, pageSize: pageSize1.value })
+  if (table.code === 0) {
+    tableData1.value = table.data.list
+    total1.value = table.data.total
+    page1.value = table.data.page
+    pageSize1.value = table.data.pageSize
+  }
+  // userInfo.value = JSON.parse(JSON.stringify(row))
+  addDetailDialog.value = true
 }
 
 </script>

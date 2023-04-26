@@ -88,7 +88,7 @@
       v-model="addDetailDialog"
       custom-class="user-dialog"
       title="入库单详情"
-      :show-close="false"
+      :show-close="true"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
     >
@@ -97,19 +97,11 @@
           :data="tableData1"
           row-key="id"
         >
-          OrderNumber string `json:"orderNumber"`
-          WarehouseId uint   `json:"warehouseId"`
-          StaffId     uint   `json:"staffId"`
-          GoodsId     uint   `json:"goodsId"`
-          Weight      int    `json:"weight"`
-          ShelfName   string `json:"shelfName"`
-          <!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
           <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
           <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
-          <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+          <el-table-column align="left" label="货物名" min-width="180" prop="goodsName" />
           <el-table-column align="left" label="重量" min-width="180" prop="weight" />
-          <el-table-column align="left" label="入库方式" min-width="180" prop="type" />
-          <el-table-column align="left" label="来源" min-width="180" prop="fromWhere" />
+          <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
           <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
           <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
 
@@ -385,8 +377,8 @@ const openEdit = (row) => {
   userInfo.value = JSON.parse(JSON.stringify(row))
   addCustomerDialog.value = true
 }
-const openDetail = async() => {
-  const table = await getInWarehousesDetail({ page: page.value, pageSize: pageSize.value })
+const openDetail = async(row) => {
+  const table = await getInWarehousesDetail({ orderNumber: row.orderNumber, page: page1.value, pageSize: pageSize1.value })
   if (table.code === 0) {
     tableData1.value = table.data.list
     total1.value = table.data.total

@@ -50,7 +50,7 @@ export const getOutWarehousesList = (data) => {
 }
 export const getOutWarehousesDetail = (data) => {
   return service({
-    url: "/warehouse/v1/getOutWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    url: "/warehouse/v1/getOutWarehousesDetail" +  "?orderNumber="+data.orderNumber+"&page="+data.page+"&pageSize="+data.pageSize,
     method: 'get',
     data: data
   })
@@ -65,7 +65,7 @@ export const getInWarehousesList = (data) => {
 // 获取客户列表
 export const getInWarehousesDetail = (data) => {
   return service({
-    url: "/warehouse/v1/getInWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    url: "/warehouse/v1/getInWarehousesDetail" + "?orderNumber="+data.orderNumber+"&page="+data.page+"&pageSize="+data.pageSize,
     method: 'get',
     data: data
   })
@@ -200,7 +200,7 @@ export const getV2OutWarehousesList = (data) => {
 }
 export const getV2OutWarehousesDetail = (data) => {
   return service({
-    url: "/warehouse/v2/getOutWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    url: "/warehouse/v2/getOutWarehousesDetail" +  "?orderNumber="+data.orderNumber+"&page="+data.page+"&pageSize="+data.pageSize,
     method: 'get',
     data: data
   })
@@ -214,7 +214,7 @@ export const getV2InWarehousesList = (data) => {
 }
 export const getV2InWarehousesDetail = (data) => {
   return service({
-    url: "/warehouse/v2/getInWarehousesDetail" + "?page="+data.page+"&pageSize="+data.pageSize,
+    url: "/warehouse/v2/getInWarehousesDetail" +  "?orderNumber="+data.orderNumber+"&page="+data.page+"&pageSize="+data.pageSize,
     method: 'get',
     data: data
   })
@@ -261,6 +261,13 @@ export const deleteGoodsShelf = (data) => {
 export const inWarehouse = (data) => {
   return service({
     url: '/warehouse/v2/inWarehouse',
+    method: 'post',
+    data: data
+  })
+}
+export const outWarehouse = (data) => {
+  return service({
+    url: '/warehouse/v2/outWarehouse',
     method: 'post',
     data: data
   })

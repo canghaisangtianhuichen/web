@@ -17,22 +17,11 @@
         <el-table-column align="left" label="来源" min-width="180" prop="fromWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
         <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
-        <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
-        <!--          <template #default="scope">-->
-        <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
-        <!--              <p>确定要删除此用户吗</p>-->
-        <!--              <div style="text-align: right; margin-top: 8px;">-->
-        <!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
-        <!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
-        <!--              </div>-->
-        <!--              <template #reference>-->
-        <!--                <el-button type="primary" link icon="delete">删除</el-button>-->
-        <!--              </template>-->
-        <!--            </el-popover>-->
-        <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
-        <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
+                <el-table-column label="操作" min-width="250" fixed="right">
+                  <template #default="scope">
+                    <el-button type="primary" link icon="edit" @click="openDetail(scope.row)">详情</el-button>
+                  </template>
+                </el-table-column>
 
       </el-table>
       <div class="gva-pagination">
@@ -108,6 +97,41 @@
       </template>
     </el-dialog>
     <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`headerImg`" />
+    <el-dialog
+        v-model="addDetailDialog"
+        custom-class="user-dialog"
+        title="入库单详情"
+        :show-close="true"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
+    >
+      <div class="gva-table-box">
+        <el-table
+            :data="tableData5"
+            row-key="id"
+        >
+          <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
+          <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+          <el-table-column align="left" label="货物名" min-width="180" prop="goodsName" />
+          <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+          <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+          <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+          <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
+
+        </el-table>
+        <div class="gva-pagination">
+          <el-pagination
+              :current-page="page1"
+              :page-size="pageSize1"
+              :page-sizes="[10, 30, 50, 100]"
+              :total="total1"
+              layout="total, sizes, prev, pager, next, jumper"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+          />
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -124,7 +148,7 @@ import {
   getV2GoodsList,
   getV2GoodsShelfsList,
   getV2SuppliersList,
-  inWarehouse, getV2WarehousesList,
+  inWarehouse, getV2WarehousesList, getV2InWarehousesDetail,
   // addCustomer,
   // deleteCustomer,
   // updateCustomer
@@ -164,12 +188,16 @@ const setAuthorityOptions = (AuthorityData, optionsData) => {
 
 const page = ref(1)
 const total = ref(0)
+const page1 = ref(1)
+const total1 = ref(0)
+const pageSize1 = ref(10)
 const pageSize = ref(10)
 const tableData = ref([])
 const tableData1 = ref([])
 const tableData2 = ref([])
 const tableData3 = ref([])
 const tableData4 = ref([])
+const tableData5 = ref([])
 
 // 分页
 const handleSizeChange = (val) => {
@@ -368,11 +396,22 @@ const enteraddCustomerDialog = async() => {
 }
 
 const addCustomerDialog = ref(false)
+const addDetailDialog = ref(false)
 const closeaddCustomerDialog = () => {
   // userForm.value.resetFields()
   // userInfo.value.headerImg = ''
   // userInfo.value.authorityIds = []
 
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
   list.value.pop()
   list.value.pop()
   list.value.pop()
@@ -426,6 +465,21 @@ const openEdit = (row) => {
   userInfo.value = JSON.parse(JSON.stringify(row))
   addCustomerDialog.value = true
 }
+const openDetail = async(row) => {
+  const table = await getV2InWarehousesDetail({
+    orderNumber: row.orderNumber,
+    page: page1.value,
+    pageSize: pageSize1.value
+  })
+  if (table.code === 0) {
+    tableData5.value = table.data.list
+    total1.value = table.data.total
+    page1.value = table.data.page
+    pageSize1.value = table.data.pageSize
+  }
+  // userInfo.value = JSON.parse(JSON.stringify(row))
+  addDetailDialog.value = true
+}
 
 const addUser = () => {
   addCustomerDialog.value = true
@@ -445,8 +499,7 @@ const form = reactive([
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },
-  { huowu: '', huojia: '', zhongliang: '' }])
-const deleteForm = reactive([
+  { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },
   { huowu: '', huojia: '', zhongliang: '' },

@@ -14,25 +14,14 @@
         <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
         <el-table-column align="left" label="重量" min-width="180" prop="weight" />
         <el-table-column align="left" label="出库方式" min-width="180" prop="type" />
-        <el-table-column align="left" label="去向" min-width="180" prop="toWhere" />
+        <el-table-column align="left" label="去处" min-width="180" prop="toWhere" />
         <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
         <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
-        <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
-        <!--          <template #default="scope">-->
-        <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
-        <!--              <p>确定要删除此用户吗</p>-->
-        <!--              <div style="text-align: right; margin-top: 8px;">-->
-        <!--                <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>-->
-        <!--                <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>-->
-        <!--              </div>-->
-        <!--              <template #reference>-->
-        <!--                <el-button type="primary" link icon="delete">删除</el-button>-->
-        <!--              </template>-->
-        <!--            </el-popover>-->
-        <!--            <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>-->
-        <!--            &lt;!&ndash;            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>&ndash;&gt;-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
+        <el-table-column label="操作" min-width="250" fixed="right">
+          <template #default="scope">
+            <el-button type="primary" link icon="edit" @click="openDetail(scope.row)">详情</el-button>
+          </template>
+        </el-table-column>
 
       </el-table>
       <div class="gva-pagination">
@@ -50,57 +39,56 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="出库单"
-      :show-close="false"
+      :show-close="true"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
+      destroy-on-close
+      width="1000px"
     >
-      <div style="height:60vh;overflow:auto;padding:0 12px;">
-        <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">
-          <!--          <el-form-item v-if="dialogFlag === 'add'" label="用户名" prop="name">-->
-          <!--            <el-input v-model="userInfo.userName" />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item v-if="dialogFlag === 'add'" label="密码" prop="password">-->
-          <!--            <el-input v-model="userInfo.password" />-->
-          <!--          </el-form-item>-->
-          <el-form-item label="姓名" prop="name">
-            <el-input v-model="userInfo.name" />
+      <header>
+        <div style="margin-bottom: 20px;">
+          <el-button type="primary" @click="addChild">点击添加出库单</el-button>
+        </div>
+        <div>
+          <el-form-item label="出库类型">
+            <el-select v-model="toType" placeholder="请选择出库类型">
+              <el-option v-for="item in temType" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
           </el-form-item>
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="userInfo.phone" />
+          <el-form-item label="出库来源">
+            <el-select v-model="toWhere" placeholder="请选择出库来源">
+              <el-option v-for="item in tableData3" :key="item.index" :label="item.name" :value="item.id" />
+            </el-select>
           </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="userInfo.email" />
-          </el-form-item>
-          <!--          <el-form-item label="用户角色" prop="authorityId">-->
-          <!--            <el-cascader-->
-          <!--              v-model="userInfo.authorityIds"-->
-          <!--              style="width:100%"-->
-          <!--              :options="authOptions"-->
-          <!--              :show-all-levels="false"-->
-          <!--              :props="{ multiple:true,checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"-->
-          <!--              :clearable="false"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="启用" prop="disabled">-->
-          <!--            <el-switch-->
-          <!--              v-model="userInfo.enable"-->
-          <!--              inline-prompt-->
-          <!--              :active-value="1"-->
-          <!--              :inactive-value="2"-->
-          <!--            />-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="头像" label-width="80px">-->
-          <!--            <div style="display:inline-block" @click="openHeaderChange">-->
-          <!--              <img v-if="userInfo.headerImg" alt="头像" class="header-img-box" :src="(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg">-->
-          <!--              <div v-else class="header-img-box">从媒体库选择</div>-->
-          <!--            </div>-->
-          <!--          </el-form-item>-->
+        </div>
+      </header>
 
-        </el-form>
-
-      </div>
-
+      <section style="height: 300px; overflow: auto">
+        <ul>
+          <template v-for="(item,index) in list">
+            <span v-if="item.type === 'child'" :key="index">
+              <el-form v-model="form" inline>
+                <el-form-item label="货物">
+                  <el-select v-model="form[index].huowu" placeholder="请选择货物">
+                    <el-option v-for="item in tableData1" :key="item.index" :label="item.name" :value="item.id" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="货架">
+                  <el-select v-model="form[index].huojia" placeholder="请选择货架">
+                    <el-option v-for="item in tableData2" :key="item.index" :label="item.name" :value="item.name" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="重量">
+                  <el-input v-model="form[index].zhongliang" />
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="delChild">删除</el-button>
+                </el-form-item>
+              </el-form>
+            </span>
+          </template>
+        </ul>
+      </section>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeaddCustomerDialog">取 消</el-button>
@@ -109,6 +97,41 @@
       </template>
     </el-dialog>
     <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`headerImg`" />
+    <el-dialog
+      v-model="addDetailDialog"
+      custom-class="user-dialog"
+      title="出库单详情"
+      :show-close="true"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+    >
+      <div class="gva-table-box">
+        <el-table
+          :data="tableData5"
+          row-key="id"
+        >
+          <el-table-column align="left" label="orderNumber" min-width="150" prop="orderNumber" />
+          <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+          <el-table-column align="left" label="货物名" min-width="180" prop="goodsName" />
+          <el-table-column align="left" label="重量" min-width="180" prop="weight" />
+          <el-table-column align="left" label="员工名" min-width="180" prop="staffName" />
+          <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+          <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
+
+        </el-table>
+        <div class="gva-pagination">
+          <el-pagination
+            :current-page="page1"
+            :page-size="pageSize1"
+            :page-sizes="[10, 30, 50, 100]"
+            :total="total1"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          />
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -122,9 +145,12 @@ export default {
 
 import {
   getV2OutWarehousesList,
-  // addCustomer,
-  // deleteCustomer,
-  // updateCustomer
+  getV2GoodsList,
+  getV2GoodsShelfsList,
+  getV2CustomersList,
+  getV2WarehousesList,
+  getV2OutWarehousesDetail,
+  outWarehouse,
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -133,8 +159,9 @@ import ChooseImg from '@/components/chooseImg/index.vue'
 import WarningBar from '@/components/warningBar/warningBar.vue'
 // import { setUserInfo, resetPassword } from '@/api/user.js'
 
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { register } from '@/api/user'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
@@ -160,8 +187,17 @@ const setAuthorityOptions = (AuthorityData, optionsData) => {
 
 const page = ref(1)
 const total = ref(0)
+const page1 = ref(1)
+const total1 = ref(0)
+const pageSize1 = ref(10)
 const pageSize = ref(10)
 const tableData = ref([])
+const tableData1 = ref([])
+const tableData2 = ref([])
+const tableData3 = ref([])
+const tableData4 = ref([])
+const tableData5 = ref([])
+
 // 分页
 const handleSizeChange = (val) => {
   pageSize.value = val
@@ -190,6 +226,22 @@ const getTableData = async() => {
     total.value = table.data.total
     page.value = table.data.page
     pageSize.value = table.data.pageSize
+  }
+  const table1 = await getV2GoodsList({ page: 1, pageSize: 1000 })
+  if (table1.code === 0) {
+    tableData1.value = table1.data.list
+  }
+  const table2 = await getV2GoodsShelfsList({ page: 1, pageSize: 1000 })
+  if (table2.code === 0) {
+    tableData2.value = table2.data.list
+  }
+  const table3 = await getV2CustomersList({ page: 1, pageSize: 1000 })
+  if (table3.code === 0) {
+    tableData3.value = table3.data.list
+  }
+  const table4 = await getV2WarehousesList({ page: 1, pageSize: 1000 })
+  if (table4.code === 0) {
+    tableData4.value = table4.data.list
   }
 }
 
@@ -265,6 +317,14 @@ const userInfo = ref({
   email: '',
   enable: 1,
 })
+const OutWarehouseInfo = ref({
+  totalWeight: 0,
+  type: '',
+  toId: 0,
+  goodsId: [],
+  weight: [],
+  shelfName: [],
+})
 
 const rules = ref({
   Name: [
@@ -291,36 +351,79 @@ const rules = ref({
 const userForm = ref(null)
 const enteraddCustomerDialog = async() => {
   // userInfo.value.authorityId = userInfo.value.authorityIds[0]
-  userForm.value.validate(async valid => {
-    if (valid) {
-      const req = {
-        ...userInfo.value
-      }
-      if (dialogFlag.value === 'add') {
-        const res = await addCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '创建成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
-      if (dialogFlag.value === 'edit') {
-        const res = await updateCustomer(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeaddCustomerDialog()
-        }
-      }
+  const len = list.value.length
+  for (let i = 0; i < len; i++) {
+    if (form[i].huowu === '' || form[i].huojia === '' || form[i].zhongliang === '') {
+      ElMessage({
+        message: '货物信息不能为空',
+        type: 'error',
+      })
+      break
     }
-  })
+  }
+
+  for (const value of form) {
+    if (value.huowu !== '' && value.huojia !== '' && value.zhongliang !== '') {
+      listHuowu.value.push(value.huowu)
+      listHuojia.value.push(value.huojia)
+      listZhongliang.value.push(Number(value.zhongliang))
+      OutWarehouseInfo.value.totalWeight = OutWarehouseInfo.value.totalWeight + Number(value.zhongliang)
+    }
+  }
+  console.log(toType.value)
+  console.log(toWhere.value)
+  console.log(listHuowu.value)
+  console.log(listHuojia.value)
+  console.log(listZhongliang.value)
+  OutWarehouseInfo.value.type = toType.value
+  OutWarehouseInfo.value.toId = Number(toWhere.value)
+  OutWarehouseInfo.value.goodsId = listHuowu.value
+  OutWarehouseInfo.value.shelfName = listHuojia.value
+  OutWarehouseInfo.value.weight = listZhongliang.value
+  console.log(OutWarehouseInfo)
+  const req = {
+    ...OutWarehouseInfo.value
+  }
+  console.log(req)
+  const res = await outWarehouse({ ...OutWarehouseInfo.value })
+  // const res = await inWarehouse(req)
+  if (res.code === 0) {
+    ElMessage({ type: 'success', message: '创建成功' })
+    await getTableData()
+  }
+  closeaddCustomerDialog()
 }
 
 const addCustomerDialog = ref(false)
+const addDetailDialog = ref(false)
 const closeaddCustomerDialog = () => {
-  userForm.value.resetFields()
-  userInfo.value.headerImg = ''
-  userInfo.value.authorityIds = []
+  // userForm.value.resetFields()
+  // userInfo.value.headerImg = ''
+  // userInfo.value.authorityIds = []
+
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  list.value.pop()
+  toType.value = ''
+  toWhere.value = ''
+
   addCustomerDialog.value = false
 }
 
@@ -360,6 +463,67 @@ const openEdit = (row) => {
   dialogFlag.value = 'edit'
   userInfo.value = JSON.parse(JSON.stringify(row))
   addCustomerDialog.value = true
+}
+const openDetail = async(row) => {
+  const table = await getV2OutWarehousesDetail({
+    orderNumber: row.orderNumber,
+    page: page1.value,
+    pageSize: pageSize1.value
+  })
+  if (table.code === 0) {
+    tableData5.value = table.data.list
+    total1.value = table.data.total
+    page1.value = table.data.page
+    pageSize1.value = table.data.pageSize
+  }
+  // userInfo.value = JSON.parse(JSON.stringify(row))
+  addDetailDialog.value = true
+}
+
+const addUser = () => {
+  addCustomerDialog.value = true
+}
+
+const child = ref(0)
+const list = ref([])
+const toType = ref()
+const toWhere = ref()
+const form = reactive([
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' },
+  { huowu: '', huojia: '', zhongliang: '' }])
+
+const temType = reactive([
+  { name: '调拨出库', id: '0' },
+  { name: '销售', id: '1' }])
+const listHuowu = ref([])
+const listHuojia = ref([])
+const listZhongliang = ref([])
+
+const addChild = () => {
+  list.value.push({
+    type: 'child'
+  })
+}
+const delChild = () => {
+  list.value.pop()
 }
 
 </script>
@@ -404,4 +568,9 @@ const openEdit = (row) => {
   font-size: 16px;
   margin-left: 2px;
 }
+#divRoot {
+  width: 100%;
+  height: auto;
+}
+
 </style>
