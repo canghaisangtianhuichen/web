@@ -13,7 +13,11 @@
         <el-table-column align="left" label="用户名" min-width="150" prop="name" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
-        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+        <el-table-column align="left" label="添加时间" min-width="200" prop="createdAt">
+          <template #default="scope">
+            <div>{{ changeTime(scope.row.createdAt) }}</div>
+          </template>
+        </el-table-column>
 <!--        <el-table-column label="操作" min-width="250" fixed="right">-->
 <!--          <template #default="scope">-->
 <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
@@ -132,6 +136,7 @@ import WarningBar from '@/components/warningBar/warningBar.vue'
 
 import { nextTick, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { formatTimeToStr } from '@/utils/date'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
@@ -193,7 +198,9 @@ const getTableData = async() => {
 // watch(() => tableData.value, () => {
 //   setAuthorityIds()
 // })
-
+const changeTime = (time) => {
+  return formatTimeToStr(time, 'yyyy-MM-dd hh:mm:ss')
+}
 const initPage = async() => {
   getTableData()
   // const res = await getAuthorityList({ page: 1, pageSize: 999 })

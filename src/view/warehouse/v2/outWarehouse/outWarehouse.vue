@@ -15,9 +15,17 @@
         <el-table-column align="left" label="重量" min-width="180" prop="weight" />
         <el-table-column align="left" label="出库方式" min-width="180" prop="type" />
         <el-table-column align="left" label="去处" min-width="180" prop="toWhere" />
-        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
+        <el-table-column align="left" label="添加时间" min-width="200" prop="createdAt">
+          <template #default="scope">
+            <div>{{ changeTime(scope.row.createdAt) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="修改时间" min-width="200" prop="updatedAt">
+          <template #default="scope">
+            <div>{{ changeTime(scope.row.updatedAt) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="100" fixed="right">
           <template #default="scope">
             <el-button type="primary" link icon="edit" @click="openDetail(scope.row)">详情</el-button>
           </template>
@@ -55,7 +63,7 @@
               <el-option v-for="item in temType" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </el-form-item>
-          <el-form-item label="出库来源">
+          <el-form-item label="出库来源" v-if="showToWhere">
             <el-select v-model="toWhere" placeholder="请选择出库来源">
               <el-option v-for="item in tableData3" :key="item.index" :label="item.name" :value="item.id" />
             </el-select>
@@ -104,6 +112,8 @@
       :show-close="true"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
+      width="1300px"
+      :before-close="closeDialog"
     >
       <div class="gva-table-box">
         <el-table
@@ -126,8 +136,8 @@
             :page-sizes="[10, 30, 50, 100]"
             :total="total1"
             layout="total, sizes, prev, pager, next, jumper"
-            @current-change="handleCurrentChange"
-            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange1"
+            @size-change="handleSizeChange1"
           />
         </div>
       </div>
@@ -162,6 +172,7 @@ import WarningBar from '@/components/warningBar/warningBar.vue'
 import { nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { register } from '@/api/user'
+import { formatTimeToStr } from '@/utils/date'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
@@ -203,12 +214,24 @@ const handleSizeChange = (val) => {
   pageSize.value = val
   getTableData()
 }
-
+const handleSizeChange1 = (val) => {
+  pageSize1.value = val
+  openDetail(_row.value)
+}
 const handleCurrentChange = (val) => {
   page.value = val
   getTableData()
 }
+const handleCurrentChange1 = (val) => {
+  page1.value = val
+  openDetail(_row.value)
+}
 
+const closeDialog = () => {
+  addDetailDialog.value = false
+  page1.value = 1
+  pageSize1.value = 10
+}
 // 查询
 // const getTableData = async() => {
 //   const table = await getCustomerList({ page: page.value, pageSize: pageSize.value })
@@ -235,13 +258,20 @@ const getTableData = async() => {
   if (table2.code === 0) {
     tableData2.value = table2.data.list
   }
-  const table3 = await getV2CustomersList({ page: 1, pageSize: 1000 })
+}
+const changeTime = (time) => {
+  return formatTimeToStr(time, 'yyyy-MM-dd hh:mm:ss')
+}
+const getCustomers = async() => {
+  const table3 = await getV2CustomersList({page: 1, pageSize: 1000})
   if (table3.code === 0) {
     tableData3.value = table3.data.list
   }
-  const table4 = await getV2WarehousesList({ page: 1, pageSize: 1000 })
+}
+const getWarehouses = async() => {
+  const table4 = await getV2WarehousesList({page: 1, pageSize: 1000})
   if (table4.code === 0) {
-    tableData4.value = table4.data.list
+    tableData3.value = table4.data.list
   }
 }
 
@@ -464,7 +494,9 @@ const openEdit = (row) => {
   userInfo.value = JSON.parse(JSON.stringify(row))
   addCustomerDialog.value = true
 }
+const _row = ref(null)
 const openDetail = async(row) => {
+  _row.value = row
   const table = await getV2OutWarehousesDetail({
     orderNumber: row.orderNumber,
     page: page1.value,
@@ -525,7 +557,20 @@ const addChild = () => {
 const delChild = () => {
   list.value.pop()
 }
+const showToWhere = ref(false)
 
+watch(toType, (val) => {
+  if (val) {
+    showToWhere.value = true
+    if(val === '1'){
+      getCustomers()
+    } else {
+      getWarehouses()
+    }
+  } else {
+    showToWhere.value = false
+  }
+})
 </script>
 
 <style lang="scss">

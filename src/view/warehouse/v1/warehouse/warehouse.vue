@@ -12,7 +12,11 @@
 <!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
         <el-table-column align="left" label="仓库名" min-width="150" prop="name" />
         <el-table-column align="left" label="位置" min-width="180" prop="location" />
-        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
+        <el-table-column align="left" label="添加时间" min-width="200" prop="createdAt">
+          <template #default="scope">
+            <div>{{ changeTime(scope.row.createdAt) }}</div>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" min-width="250" fixed="right">
           <template #default="scope">
             <el-popover v-model="scope.row.visible" placement="top" width="160">
@@ -50,6 +54,7 @@
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
+      :destroy-on-close="true"
     >
       <div style="height:60vh;overflow:auto;padding:0 12px;">
         <el-form ref="userForm" :rules="rules" :model="userInfo" label-width="80px">
@@ -103,6 +108,7 @@ import WarningBar from '@/components/warningBar/warningBar.vue'
 
 import { nextTick, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { formatTimeToStr } from '@/utils/date'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
@@ -164,6 +170,9 @@ const getTableData = async() => {
 // watch(() => tableData.value, () => {
 //   setAuthorityIds()
 // })
+const changeTime = (time) => {
+  return formatTimeToStr(time, 'yyyy-MM-dd hh:mm:ss')
+}
 
 const initPage = async() => {
   getTableData()
@@ -238,8 +247,7 @@ const enteraddCustomerDialog = async() => {
 const addCustomerDialog = ref(false)
 const closeaddCustomerDialog = () => {
   userForm.value.resetFields()
-  userInfo.value.headerImg = ''
-  userInfo.value.authorityIds = []
+  userInfo.value = ''
   addCustomerDialog.value = false
 }
 

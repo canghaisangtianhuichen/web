@@ -13,9 +13,17 @@
         <el-table-column align="left" label="重量" min-width="180" prop="weight" />
         <el-table-column align="left" label="入库方式" min-width="180" prop="type" />
         <el-table-column align="left" label="来源" min-width="180" prop="fromWhere" />
-        <el-table-column align="left" label="添加时间" min-width="150" prop="createdAt" />
-        <el-table-column align="left" label="修改时间" min-width="150" prop="updatedAt" />
-        <el-table-column label="操作" min-width="250" fixed="right">
+        <el-table-column align="left" label="添加时间" min-width="200" prop="createdAt">
+          <template #default="scope">
+            <div>{{ changeTime(scope.row.createdAt) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="修改时间" min-width="200" prop="updatedAt">
+          <template #default="scope">
+            <div>{{ changeTime(scope.row.updatedAt) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="100" fixed="right">
           <template #default="scope">
             <!--            <el-popover v-model="scope.row.visible" placement="top" width="160">-->
             <!--              <p>确定要删除此用户吗</p>-->
@@ -91,6 +99,8 @@
       :show-close="true"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
+      width="1300px"
+      :before-close="closeDialog"
     >
       <div class="gva-table-box">
         <el-table
@@ -113,8 +123,8 @@
             :page-sizes="[10, 30, 50, 100]"
             :total="total1"
             layout="total, sizes, prev, pager, next, jumper"
-            @current-change="handleCurrentChange"
-            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange1"
+            @size-change="handleSizeChange1"
           />
         </div>
       </div>
@@ -146,6 +156,7 @@ import WarningBar from '@/components/warningBar/warningBar.vue'
 
 import { nextTick, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { formatTimeToStr } from '@/utils/date'
 // const path = ref(import.meta.env.VITE_BASE_API + '/')
 // 初始化相关
 const setAuthorityOptions = (AuthorityData, optionsData) => {
@@ -183,9 +194,25 @@ const handleSizeChange = (val) => {
   getTableData()
 }
 
+const handleSizeChange1 = (val) => {
+  pageSize1.value = val
+  openDetail(_row.value)
+}
+
 const handleCurrentChange = (val) => {
   page.value = val
   getTableData()
+}
+
+const handleCurrentChange1 = (val) => {
+  page1.value = val
+  openDetail(_row.value)
+}
+
+const closeDialog = () => {
+  addDetailDialog.value = false
+  page1.value = 1
+  pageSize1.value = 10
 }
 
 // 查询
@@ -211,6 +238,9 @@ const getTableData = async() => {
 // watch(() => tableData.value, () => {
 //   setAuthorityIds()
 // })
+const changeTime = (time) => {
+  return formatTimeToStr(time, 'yyyy-MM-dd hh:mm:ss')
+}
 
 const initPage = async() => {
   getTableData()
@@ -377,7 +407,9 @@ const openEdit = (row) => {
   userInfo.value = JSON.parse(JSON.stringify(row))
   addCustomerDialog.value = true
 }
+const _row = ref(null)
 const openDetail = async(row) => {
+  _row.value = row
   const table = await getInWarehousesDetail({ orderNumber: row.orderNumber, page: page1.value, pageSize: pageSize1.value })
   if (table.code === 0) {
     tableData1.value = table.data.list
