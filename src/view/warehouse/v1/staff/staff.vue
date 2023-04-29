@@ -9,7 +9,7 @@
         :data="tableData"
         row-key="id"
       >
-<!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
+        <!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
         <el-table-column align="left" label="员工名" min-width="150" prop="name" />
         <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
         <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
@@ -33,7 +33,7 @@
               </template>
             </el-popover>
             <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-            <!--            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>-->
+                        <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>
           </template>
         </el-table-column>
 
@@ -75,9 +75,6 @@
           </el-form-item>
           <el-form-item label="昵称" prop="nickName">
             <el-input v-model="userInfo.nickName" />
-          </el-form-item>
-          <el-form-item label="仓库" prop="warehouseId">
-            <el-input v-model="userInfo.phone" />
           </el-form-item>
           <el-form-item label="手机号" prop="phone">
             <el-input v-model="userInfo.phone" />
@@ -127,7 +124,7 @@ import {
   getStaffsList,
   addStaff,
   deleteStaff,
-  updateStaff
+  updateStaff, resetPassword
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -188,7 +185,7 @@ const handleCurrentChange = (val) => {
 //   }
 // }
 const getTableData = async() => {
-  const table = await getStaffsList({ page: page.value, pageSize: pageSize.value})
+  const table = await getStaffsList({ page: page.value, pageSize: pageSize.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -212,39 +209,33 @@ const initPage = async() => {
 
 initPage()
 
-// const resetPasswordFunc = (row) => {
-//   ElMessageBox.confirm(
-//     '是否将此用户密码重置为123456?',
-//     '警告',
-//     {
-//       confirmButtonText: '确定',
-//       cancelButtonText: '取消',
-//       type: 'warning',
-//     }
-//   ).then(async() => {
-//     const res = await resetPassword({
-//       ID: row.ID,
-//     })
-//     if (res.code === 0) {
-//       ElMessage({
-//         type: 'success',
-//         message: res.msg,
-//       })
-//     } else {
-//       ElMessage({
-//         type: 'error',
-//         message: res.msg,
-//       })
-//     }
-//   })
-// }
-// const setAuthorityIds = () => {
-//   tableData.value && tableData.value.forEach((user) => {
-//     customer.authorityIds = customer.authorities && customer.authorities.map(i => {
-//       return i.authorityId
-//     })
-//   })
-// }
+const resetPasswordFunc = (row) => {
+  ElMessageBox.confirm(
+    '是否将此用户密码重置为123456?',
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(async() => {
+    console.log(row)
+    const res = await resetPassword({
+      ID: row.id,
+    })
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: res.msg,
+      })
+    } else {
+      ElMessage({
+        type: 'error',
+        message: res.msg,
+      })
+    }
+  })
+}
 
 const chooseImg = ref(null)
 const openHeaderChange = () => {
@@ -272,16 +263,7 @@ const userInfo = ref({
   nickName: '',
   headerImg: '',
   enable: 1,
-  warehouseId: 0,
-  phone: 0,
-  email: '',
-})
-const updateUserInfo = ref({
-  nickName: '',
-  headerImg: '',
-  enable: 1,
-  warehouseId: 0,
-  phone: 0,
+  phone: '',
   email: '',
 })
 
@@ -338,7 +320,13 @@ const enteraddCustomerDialog = async() => {
 const addCustomerDialog = ref(false)
 const closeaddCustomerDialog = () => {
   userForm.value.resetFields()
-  userInfo.value = ''
+  userInfo.value.email = ''
+  userInfo.value.userName = ''
+  userInfo.value.phone = ''
+  userInfo.value.headerImg = ''
+  userInfo.value.nickName = ''
+  userInfo.value.passWord = ''
+  userInfo.value.enable = 1
   addCustomerDialog.value = false
 }
 

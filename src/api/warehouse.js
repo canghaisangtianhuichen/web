@@ -154,8 +154,15 @@ export const deleteStaff = (data) => {
     data: data
   })
 }
+export const resetPassword = (data) => {
+  return service({
+    url: '/warehouse/v1/resetPassword',
+    method: 'post',
+    data: data
+  })
+}
 
-// -------------------------------------------v2
+// -------------------------------------------------------------------------------------------v2
 export const getV2GoodsList = (data) => {
   return service({
     url: "/warehouse/v2/getGoodsList" + "?page="+data.page+"&pageSize="+data.pageSize,

@@ -400,17 +400,11 @@ const enteraddCustomerDialog = async() => {
       OutWarehouseInfo.value.totalWeight = OutWarehouseInfo.value.totalWeight + Number(value.zhongliang)
     }
   }
-  console.log(toType.value)
-  console.log(toWhere.value)
-  console.log(listHuowu.value)
-  console.log(listHuojia.value)
-  console.log(listZhongliang.value)
   OutWarehouseInfo.value.type = toType.value
   OutWarehouseInfo.value.toId = Number(toWhere.value)
   OutWarehouseInfo.value.goodsId = listHuowu.value
   OutWarehouseInfo.value.shelfName = listHuojia.value
   OutWarehouseInfo.value.weight = listZhongliang.value
-  console.log(OutWarehouseInfo)
   const req = {
     ...OutWarehouseInfo.value
   }
