@@ -4,6 +4,7 @@
     <div class="gva-table-box">
       <div class="gva-btn-list">
         <el-button type="primary" icon="plus" @click="temCustomer">新增员工</el-button>
+        <el-button type="primary" icon="search" @click="staffList">查看离职员工</el-button>
       </div>
       <el-table
         :data="tableData"
@@ -23,17 +24,17 @@
         <el-table-column label="操作" min-width="250" fixed="right">
           <template #default="scope">
             <el-popover v-model="scope.row.visible" placement="top" width="160">
-              <p>确定要删除此员工吗</p>
+              <p>确定设定员工为离职吗</p>
               <div style="text-align: right; margin-top: 8px;">
                 <el-button type="primary" link @click="scope.row.visible = false">取消</el-button>
                 <el-button type="primary" @click="deleteCustomerFunc(scope.row)">确定</el-button>
               </div>
               <template #reference>
-                <el-button type="primary" link icon="delete">删除</el-button>
+                <el-button type="primary" link icon="delete">离职</el-button>
               </template>
             </el-popover>
             <el-button type="primary" link icon="edit" @click="openEdit(scope.row)">编辑</el-button>
-                        <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>
+            <el-button type="primary" link icon="magic-stick" @click="resetPasswordFunc(scope.row)">重置密码</el-button>
           </template>
         </el-table-column>
 
@@ -82,20 +83,14 @@
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="userInfo.email" />
           </el-form-item>
-          <el-form-item label="启用" prop="disabled">
-            <el-switch
-              v-model="userInfo.enable"
-              inline-prompt
-              :active-value="1"
-              :inactive-value="2"
-            />
-          </el-form-item>
-          <el-form-item label="头像" label-width="80px">
-            <div style="display:inline-block" @click="openHeaderChange">
-              <img v-if="userInfo.headerImg" alt="头像" class="header-img-box" :src="(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg">
-              <div v-else class="header-img-box">从媒体库选择</div>
-            </div>
-          </el-form-item>
+<!--          <el-form-item label="启用" prop="disabled">-->
+<!--            <el-switch-->
+<!--              v-model="userInfo.enable"-->
+<!--              inline-prompt-->
+<!--              :active-value="1"-->
+<!--              :inactive-value="2"-->
+<!--            />-->
+<!--          </el-form-item>-->
 
         </el-form>
 
@@ -108,7 +103,87 @@
         </div>
       </template>
     </el-dialog>
+    <el-dialog
+      v-model="updateCustomerDialog"
+      custom-class="user-dialog"
+      title="编辑员工"
+      :show-close="false"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :destroy-on-close="true"
+    >
+      <div style="height:60vh;overflow:auto;padding:0 12px;">
+        <el-form ref="userForm1" :rules="rules" :model="userInfo" label-width="80px">
+          <el-form-item label="昵称" prop="name">
+            <el-input v-model="userInfo.name" />
+          </el-form-item>
+          <el-form-item label="仓库名" prop="warehouseName">
+            <el-input v-model="userInfo.warehouseName" />
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="userInfo.phone" />
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="userInfo.email" />
+          </el-form-item>
+
+        </el-form>
+
+      </div>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeUpdateCustomerDialog">取 消</el-button>
+          <el-button type="primary" @click="enterUpdateCustomerDialog">确 定</el-button>
+        </div>
+      </template>
+    </el-dialog>
     <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`headerImg`" />
+    <el-dialog
+      v-model="staffListDialog"
+      custom-class="user-dialog"
+      title="离职员工列表"
+      :show-close="true"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      width="1400px"
+      :before-close="closeDialog"
+    >
+      <div class="gva-table-box">
+        <el-table
+          :data="tableData1"
+          row-key="id"
+        >
+          <el-table-column align="left" label="员工名" min-width="150" prop="name" />
+          <el-table-column align="left" label="手机号" min-width="180" prop="phone" />
+          <el-table-column align="left" label="邮箱" min-width="180" prop="email" />
+          <el-table-column align="left" label="仓库名" min-width="180" prop="warehouseName" />
+          <el-table-column align="left" label="状态" min-width="180" prop="status" />
+          <el-table-column align="left" label="添加时间" min-width="200" prop="createdAt">
+            <template #default="scope">
+              <div>{{ changeTime(scope.row.createdAt) }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="离职时间" min-width="200" prop="deletedAt">
+            <template #default="scope">
+              <div>{{ changeTime(scope.row.deletedAt) }}</div>
+            </template>
+          </el-table-column>
+
+        </el-table>
+        <div class="gva-pagination">
+          <el-pagination
+            :current-page="page1"
+            :page-size="pageSize1"
+            :page-sizes="[10, 30, 50, 100]"
+            :total="total1"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handleCurrentChange1"
+            @size-change="handleSizeChange1"
+          />
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -124,7 +199,7 @@ import {
   getStaffsList,
   addStaff,
   deleteStaff,
-  updateStaff, resetPassword
+  updateStaff, resetPassword, getOffStaffList
 } from '@/api/warehouse'
 
 // import { getAuthorityList } from '@/api/authority'
@@ -163,17 +238,34 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
+const page1 = ref(1)
+const total1 = ref(0)
+const pageSize1 = ref(10)
+const tableData1 = ref([])
 // 分页
 const handleSizeChange = (val) => {
   pageSize.value = val
   getTableData()
 }
-
+const handleSizeChange1 = (val) => {
+  pageSize1.value = val
+  openDetail(_row.value)
+}
 const handleCurrentChange = (val) => {
   page.value = val
   getTableData()
 }
 
+const handleCurrentChange1 = (val) => {
+  page1.value = val
+  staffList()
+}
+
+const closeDialog = () => {
+  staffListDialog.value = false
+  page1.value = 1
+  pageSize1.value = 10
+}
 // 查询
 // const getTableData = async() => {
 //   const table = await getCustomerList({ page: page.value, pageSize: pageSize.value })
@@ -251,7 +343,7 @@ const setOptions = (authData) => {
 const deleteCustomerFunc = async(row) => {
   const res = await deleteStaff({ id: row.id })
   if (res.code === 0) {
-    ElMessage.success('删除成功')
+    ElMessage.success('离职成功')
     row.visible = false
     await getTableData()
   }
@@ -261,6 +353,7 @@ const userInfo = ref({
   userName: '',
   passWord: '',
   nickName: '',
+  warehouseName: '',
   headerImg: '',
   enable: 1,
   phone: '',
@@ -290,6 +383,7 @@ const rules = ref({
   // ]
 })
 const userForm = ref(null)
+const userForm1 = ref(null)
 const enteraddCustomerDialog = async() => {
   // userInfo.value.authorityId = userInfo.value.authorityIds[0]
   userForm.value.validate(async valid => {
@@ -305,19 +399,30 @@ const enteraddCustomerDialog = async() => {
           closeaddCustomerDialog()
         }
       }
+    }
+  })
+}
+
+const enterUpdateCustomerDialog = async() => {
+  // userInfo.value.authorityId = userInfo.value.authorityIds[0]
+  userForm1.value.validate(async valid => {
+    if (valid) {
+      const req = {
+        ...userInfo.value
+      }
       if (dialogFlag.value === 'edit') {
         const res = await updateStaff(req)
         if (res.code === 0) {
           ElMessage({ type: 'success', message: '编辑成功' })
           await getTableData()
-          closeaddCustomerDialog()
+          closeUpdateCustomerDialog()
         }
       }
     }
   })
 }
-
 const addCustomerDialog = ref(false)
+const updateCustomerDialog = ref(false)
 const closeaddCustomerDialog = () => {
   userForm.value.resetFields()
   userInfo.value.email = ''
@@ -329,14 +434,36 @@ const closeaddCustomerDialog = () => {
   userInfo.value.enable = 1
   addCustomerDialog.value = false
 }
+const closeUpdateCustomerDialog = () => {
+  userForm1.value.resetFields()
+  userInfo.value.email = ''
+  userInfo.value.phone = ''
+  userInfo.value.headerImg = ''
+  userInfo.value.name = ''
+  userInfo.value.warehouseName = ''
+  userInfo.value.enable = 1
+  updateCustomerDialog.value = false
+}
 
 const dialogFlag = ref('add')
+const staffListDialog = ref()
 
 const temCustomer = () => {
   dialogFlag.value = 'add'
   addCustomerDialog.value = true
 }
 
+// eslint-disable-next-line no-unused-vars
+const staffList = async() => {
+  const table = await getOffStaffList({ page: page1.value, pageSize: pageSize1.value })
+  if (table.code === 0) {
+    tableData1.value = table.data.list
+    total1.value = table.data.total
+    page1.value = table.data.page
+    pageSize1.value = table.data.pageSize
+  }
+  staffListDialog.value = true
+}
 // const tempAuth = {}
 // const changeAuthority = async(row, flag, removeAuth) => {
 //   if (flag) {
@@ -365,7 +492,7 @@ const temCustomer = () => {
 const openEdit = (row) => {
   dialogFlag.value = 'edit'
   userInfo.value = JSON.parse(JSON.stringify(row))
-  addCustomerDialog.value = true
+  updateCustomerDialog.value = true
 }
 
 </script>

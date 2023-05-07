@@ -62,10 +62,17 @@ export const getInWarehousesList = (data) => {
     data: data
   })
 }
-// 获取客户列表
+
 export const getInWarehousesDetail = (data) => {
   return service({
     url: "/warehouse/v1/getInWarehousesDetail" + "?orderNumber="+data.orderNumber+"&page="+data.page+"&pageSize="+data.pageSize,
+    method: 'get',
+    data: data
+  })
+}
+export const getOffStaffList = (data) => {
+  return service({
+    url: "/warehouse/v1/getStaffsList/off" + "?orderNumber="+data.orderNumber+"&page="+data.page+"&pageSize="+data.pageSize,
     method: 'get',
     data: data
   })
