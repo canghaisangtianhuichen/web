@@ -9,7 +9,7 @@
         :data="tableData"
         row-key="id"
       >
-<!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
+        <!--        <el-table-column align="left" label="ID" min-width="50" prop="id" />-->
         <el-table-column align="left" label="货架" min-width="150" prop="name" />
         <!--        <el-table-column align="left" label="仓库" min-width="180" prop="warehouseName" />-->
         <el-table-column align="left" label="货物" min-width="180" prop="goodsName" />
@@ -59,7 +59,7 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="用户"
+      title="新增货架"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
@@ -74,6 +74,9 @@
           <!--          </el-form-item>-->
           <el-form-item label="货架名" prop="name">
             <el-input v-model="userInfo.name" />
+          </el-form-item>
+          <el-form-item label="最大重量" prop="maxWeight">
+            <el-input v-model="userInfo.maxWeight" />
           </el-form-item>
           <!--          <el-form-item label="手机号" prop="phone">-->
           <!--            <el-input v-model="userInfo.phone" />-->
@@ -274,6 +277,7 @@ const deleteV2GoodsShelfFunc = async(row) => {
 // 弹窗相关
 const userInfo = ref({
   name: '',
+  maxWeight: '',
   phone: 0,
   email: '',
   enable: 1,
@@ -306,7 +310,8 @@ const enteraddCustomerDialog = async() => {
   userForm.value.validate(async valid => {
     if (valid) {
       const req = {
-        ...userInfo.value
+        name: userInfo.value.name,
+        maxWeight: parseInt(userInfo.value.maxWeight)
       }
       if (dialogFlag.value === 'add') {
         const res = await addGoodsShelf(req)

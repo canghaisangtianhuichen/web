@@ -54,7 +54,7 @@
     <el-dialog
       v-model="addCustomerDialog"
       custom-class="user-dialog"
-      title="员工"
+      title="新增员工"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"

@@ -120,7 +120,7 @@
     <el-dialog
         v-model="addDetailDialog"
         custom-class="user-dialog"
-        title="入库单详情"
+        title="出库单详情"
         :show-close="true"
         :close-on-press-escape="false"
         :close-on-click-modal="false"
